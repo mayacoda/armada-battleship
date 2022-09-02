@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "description": "Server for the Armada JS battleship game",
+  "main": "main.js",
+  "repository": "https://github.com/mayacoda/armada-battleship",
+  "author": "Maya Nedeljković Batić",
+  "license": "MIT",
+  "scripts": {
+    "build": "esbuild ./src/main.ts --bundle --outfile=main.js --platform=node --target=node18.0",
+    "dev": "nodemon --watch './**/*.ts' --exec 'ts-node-esm' './src/main.ts'"
+  },
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^18.7.14",
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3",
+    "prettier": "2.7.1",
+    "nodemon": "^2.0.19",
+    "esbuild": "^0.15.6",
+    "typescript": "^4.7.4",
+    "ts-node": "^10.9.1"
+  },
+  "packageManager": "yarn@3.2.1",
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
+  }
+}

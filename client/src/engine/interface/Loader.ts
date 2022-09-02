@@ -9,7 +9,7 @@ export class Loader {
     this.element.insertAdjacentHTML(
       'beforeend',
       `
-        <div class="loader-inner" aria-role="progressbar">
+        <div class="loader-inner" role="progressbar">
           <h1 class="progress-number">0%</h1>
           <div class="progress-bar"></div>
         </div>
