@@ -13,14 +13,17 @@
   "scripts": {
     "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
     "dev:client": "cd client && yarn dev",
-    "dev:server": "cd server && yarn dev"
+    "dev:server": "cd server && yarn dev",
+    "build": "yarn build:client && yarn build:server",
+    "build:client": "cd client && yarn build",
+    "build:server": "cd server && yarn build"
   },
   "devDependencies": {
     "concurrently": "^7.3.0",
     "cross-env": "^7.0.3"
   },
   "type": "module",
-  "packageManager": "yarn@3.2.1",
+  "packageManager": "yarn@3.2.3",
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"
   }
