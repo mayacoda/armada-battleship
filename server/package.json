@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "esbuild": "esbuild ./src/main.ts --bundle --outfile=main.js --platform=node --target=node18.0",
-    "build": "tsc ./src/main.ts --bundle --outfile=main.js --platform=node --target=node18.0",
+    "build": "tsc --project tsconfig.json",
     "dev": "nodemon --watch './**/*.ts' --exec 'ts-node-esm' './src/main.ts'"
   },
   "type": "module",

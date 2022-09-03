@@ -3,6 +3,7 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
+    "outDir": "dist",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Node",
     "strict": true,
