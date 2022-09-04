@@ -12,6 +12,11 @@
     "dev": "nodemon --watch './**/*.ts' --exec 'ts-node-esm' './src/main.ts'"
   },
   "type": "module",
+  "dependencies": {
+    "@fastify/static": "^6.5.0",
+    "fastify": "^4.5.3",
+    "socket.io": "^4.5.2"
+  },
   "devDependencies": {
     "@types/node": "^18.7.14",
     "esbuild": "^0.15.6",

@@ -18,7 +18,8 @@
     "build:client": "cd client && yarn build",
     "build:server": "cd server && yarn build",
     "test": "echo \"No Tests Implemented\"",
-    "start": "node server/dist/main.js"
+    "start": "cd server && node ./dist/main.js",
+    "preview": "yarn build && yarn start"
   },
   "devDependencies": {
     "concurrently": "^7.3.0",

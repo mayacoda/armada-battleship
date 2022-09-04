@@ -25,3 +25,10 @@ jobs:
 
       - name: Build
         run: yarn build
+
+      - name: Deploy
+        run: |
+          pm2 stop armada-battleship
+          pm2 start armada-battleship
+          pm2 save
+          sudo service nginx restart
