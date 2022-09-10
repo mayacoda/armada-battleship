@@ -1,6 +1,7 @@
 import * as path from 'path'
-import Fastify from 'fastify'
 import FastifyStatic from '@fastify/static'
+import Fastify from 'fastify'
+import fastifyIO from 'fastify-socket.io'
 
 const hostname = 'localhost'
 const port = 3000
@@ -14,8 +15,36 @@ fastify.register(FastifyStatic, {
 })
 
 fastify.get('/', function (req, reply) {
+  reply.header('Access-Control-Allow-Origin', '*')
+  reply.header('Access-Control-Allow-Methods', 'GET')
+  reply.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Origin, Cache-Control'
+  )
+
   reply.type('text/html').sendFile('index.html')
 })
+
+// registering the socket.io plugin
+fastify.register(fastifyIO)
+
+fastify.ready().then(() => {
+  fastify.io.on('connection', (socket) => {
+    console.log('a user connected')
+    emitStatus()
+    socket.on('disconnect', () => {
+      emitStatus()
+      console.log('user disconnected')
+    })
+  })
+})
+
+const emitStatus = () => {
+  fastify.io.emit(
+    'status',
+    `Current connections: ${fastify.io.engine.clientsCount}`
+  )
+}
 
 fastify.listen(
   {

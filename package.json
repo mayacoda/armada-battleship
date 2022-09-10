@@ -11,7 +11,7 @@
   "author": "Maya Nedeljković Batić",
   "license": "MIT",
   "scripts": {
-    "dev": "concurrently \"yarn dev:client\" \"yarn dev:server\"",
+    "dev": "NODE_ENV=development concurrently \"yarn dev:client\" \"yarn dev:server\"",
     "dev:client": "cd client && yarn dev",
     "dev:server": "cd server && yarn dev",
     "build": "yarn build:client && yarn build:server",
@@ -19,7 +19,7 @@
     "build:server": "cd server && yarn build",
     "test": "echo \"No Tests Implemented\"",
     "start": "cd server && node ./dist/main.js",
-    "preview": "yarn build && yarn start"
+    "preview": "NODE_ENV=production yarn build && yarn start"
   },
   "devDependencies": {
     "concurrently": "^7.3.0",

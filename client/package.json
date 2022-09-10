@@ -16,6 +16,7 @@
   "type": "module",
   "dependencies": {
     "lil-gui": "^0.16.1",
+    "socket.io-client": "^4.5.2",
     "three": "^0.141.0"
   },
   "devDependencies": {
