@@ -5,8 +5,7 @@ export class BattleShip implements Experience {
   resources = []
 
   init() {
-    const hostname = window.location.hostname
-    const socket = io(`${hostname}:3000`, {
+    const socket = io(import.meta.env.SERVER_URL ?? 'ws://localhost:3000', {
       transports: ['websocket'],
     })
 

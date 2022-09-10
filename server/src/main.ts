@@ -3,9 +3,6 @@ import FastifyStatic from '@fastify/static'
 import Fastify from 'fastify'
 import fastifyIO from 'fastify-socket.io'
 
-const hostname = 'localhost'
-const port = 3000
-
 const fastify = Fastify({ logger: true })
 
 let root = path.join(process.cwd(), '..', 'client/dist')
@@ -46,10 +43,13 @@ const emitStatus = () => {
   )
 }
 
+let externalPort = parseInt(process.env.PORT)
+const port: number = isNaN(externalPort) ? 3000 : externalPort
+
 fastify.listen(
   {
     port,
-    host: hostname,
+    host: '0.0.0.0',
   },
   (err, address) => {
     if (err) {
