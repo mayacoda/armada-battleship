@@ -1,18 +1,19 @@
 import { Player } from '../../../types/player-types'
 import { TypedClient } from '../../../types/socket-types'
+import { GRID_SIZE } from '../../../constants/constants'
 
 function createTable() {
   const table = document.createElement('table')
   table.style.border = '1px solid black'
   table.style.margin = '15px'
   table.style.borderCollapse = 'collapse'
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < GRID_SIZE; i++) {
     const tr = document.createElement('tr')
-    for (let j = 0; j < 6; j++) {
+    for (let j = 0; j < GRID_SIZE; j++) {
       const td = document.createElement('td')
       td.style.border = '1px solid black'
-      td.style.width = '50px'
-      td.style.height = '50px'
+      td.style.width = '48px'
+      td.style.height = '48px'
       td.style.textAlign = 'center'
       td.style.verticalAlign = 'middle'
       tr.appendChild(td)
@@ -49,6 +50,10 @@ export class UIManager {
     this.socket.on('startGame', (opponentId: string) => {
       console.log('starting the game?')
       this.startGame(opponentId)
+    })
+
+    this.socket.on('initGrid', (grid: number[][]) => {
+      this.initGrid(grid)
     })
   }
 
@@ -161,6 +166,7 @@ export class UIManager {
     // show opponent name
     const opponentName = this.players[opponentId]?.name ?? opponentId
     const opponentNameElement = document.createElement('h2')
+    opponentNameElement.style.marginTop = '0'
     opponentNameElement.innerText = `Playing against ${opponentName}`
 
     gameContainer.appendChild(opponentNameElement)
@@ -179,15 +185,45 @@ export class UIManager {
     const battleshipGame = document.createElement('div')
     battleshipGame.id = 'battleship-game'
 
+    // add title "Enemy Ships"
+    const enemyTitle = document.createElement('h3')
+    enemyTitle.innerText = 'Enemy Ships'
+    battleshipGame.appendChild(enemyTitle)
+
     // create a 6 x 6 table for battleship for enemy ships
     const enemyTable = createTable()
+    enemyTable.id = 'enemy-table'
     battleshipGame.appendChild(enemyTable)
+
+    // add title "Your Ships"
+    const yourTitle = document.createElement('h3')
+    yourTitle.innerText = 'Your Ships'
+    battleshipGame.appendChild(yourTitle)
 
     // create a 6 x 6 table for battleship for player ships
     const playerTable = createTable()
+    playerTable.id = 'player-table'
     battleshipGame.appendChild(playerTable)
 
     gameContainer.appendChild(battleshipGame)
     this.uiLayer.appendChild(gameContainer)
+  }
+
+  initGrid(grid: number[][]) {
+    if (!this.isGameActive) return
+
+    const playerTable = document.querySelector(
+      '#player-table'
+    ) as HTMLTableElement
+    // mark player table with ships
+    grid.forEach((row, rowIndex) => {
+      row.forEach((cell, cellIndex) => {
+        if (cell !== 0) {
+          const cellElement = playerTable.rows[rowIndex].cells[cellIndex]
+          cellElement.classList.add('ship')
+          cellElement.innerText = cell.toString()
+        }
+      })
+    })
   }
 }

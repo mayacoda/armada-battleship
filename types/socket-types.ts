@@ -6,6 +6,7 @@ export type ServerToClientEvents = {
   updatePlayers: (players: Record<string, Player>) => void
   challenge: (attacker: string) => void
   startGame: (opponent: string) => void
+  initGrid: (grid: number[][]) => void
 }
 
 export type ClientToServerEvents = {

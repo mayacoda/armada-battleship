@@ -1,13 +1,13 @@
-import EventEmitter from 'events'
 import { Player } from '../../types/player-types'
 import { TypedServer, TypedSocket } from '../../types/socket-types'
+import { GameState } from './GameState.js'
 
-export class PlayerManager extends EventEmitter {
+export class PlayerManager {
   players: Record<string, Player> = {}
   io: TypedServer
+  games: Record<string, GameState> = {}
 
   constructor(io: TypedServer) {
-    super()
     this.io = io
   }
 
@@ -46,8 +46,15 @@ export class PlayerManager extends EventEmitter {
   }
 
   startGame(attacker: string, defender: string) {
-    this.io.to(attacker).emit('startGame', defender)
-    this.io.to(defender).emit('startGame', attacker)
+    const game = new GameState(
+      this.players[attacker],
+      this.players[defender],
+      this.io
+    )
+    this.games[game.gameId] = game
+    game.on('endGame', () => {
+      delete this.games[game.gameId]
+    })
   }
 
   forfeitGame(playerId: string) {}
