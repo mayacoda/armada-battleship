@@ -2,13 +2,12 @@ import * as path from 'path'
 import FastifyStatic from '@fastify/static'
 import Fastify from 'fastify'
 import fastifyIO from 'fastify-socket.io'
+import { PlayerManager } from './PlayerManager.js'
 
 const fastify = Fastify({ logger: true })
 
-let root = path.join(process.cwd(), '..', 'client/dist')
-
 fastify.register(FastifyStatic, {
-  root: root,
+  root: path.join(process.cwd(), '..', 'client/dist'),
 })
 
 fastify.get('/', function (req, reply) {
@@ -26,22 +25,12 @@ fastify.get('/', function (req, reply) {
 fastify.register(fastifyIO)
 
 fastify.ready().then(() => {
+  const playerManger = new PlayerManager(fastify.io)
+
   fastify.io.on('connection', (socket) => {
-    console.log('a user connected')
-    emitStatus()
-    socket.on('disconnect', () => {
-      emitStatus()
-      console.log('user disconnected')
-    })
+    playerManger.initPlayerCommunication(socket)
   })
 })
-
-const emitStatus = () => {
-  fastify.io.emit(
-    'status',
-    `Current connections: ${fastify.io.engine.clientsCount}`
-  )
-}
 
 let externalPort = parseInt(process.env.PORT)
 const port: number = isNaN(externalPort) ? 3000 : externalPort

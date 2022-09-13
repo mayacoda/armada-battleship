@@ -18,7 +18,7 @@
     "build:client": "cd client && yarn build",
     "build:server": "cd server && yarn build",
     "test": "echo \"No Tests Implemented\"",
-    "start": "cd server && node ./dist/main.js",
+    "start": "cd server && yarn start",
     "preview": "NODE_ENV=production yarn build && yarn start"
   },
   "devDependencies": {

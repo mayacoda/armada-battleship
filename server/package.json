@@ -9,6 +9,7 @@
   "scripts": {
     "esbuild": "esbuild ./src/main.ts --bundle --outfile=main.js --platform=node --target=node18.0",
     "build": "tsc --project tsconfig.json",
+    "start": "node ./dist/server/src/main.js",
     "dev": "nodemon --watch './**/*.ts' --exec 'ts-node-esm' './src/main.ts'"
   },
   "type": "module",

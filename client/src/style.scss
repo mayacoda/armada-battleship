@@ -1,14 +1,27 @@
 html,
 body,
-#canvas {
+#canvas,
+#ui {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
+}
+
+html,
+body,
+#canvas {
   background: #000;
 }
 
 #canvas {
   outline: none;
+}
+
+#ui {
+  background-color: white;
+  margin: 0 auto;
+  height: 100%;
+  width: 480px;
 }

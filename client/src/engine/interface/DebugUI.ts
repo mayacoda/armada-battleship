@@ -23,18 +23,6 @@ export class DebugUI {
       this.gui.hide()
       this.stats.dom.style.display = 'none'
     }
-
-    window.addEventListener('keydown', (event) => {
-      if (event.key === 'h') {
-        if (this.gui._hidden) {
-          this.gui.show()
-          this.stats.dom.style.display = 'block'
-        } else {
-          this.gui.hide()
-          this.stats.dom.style.display = 'none'
-        }
-      }
-    })
   }
 
   update() {
