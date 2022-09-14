@@ -1,11 +1,11 @@
 import { Player } from '../../types/player-types'
 import { TypedServer, TypedSocket } from '../../types/socket-types'
-import { GameState } from './GameState.js'
+import { BattleshipGameInstance } from './BattleshipGameInstance.js'
 
 export class PlayerManager {
   players: Record<string, Player> = {}
   io: TypedServer
-  games: Record<string, GameState> = {}
+  games: Record<string, BattleshipGameInstance> = {}
 
   constructor(io: TypedServer) {
     this.io = io
@@ -25,7 +25,7 @@ export class PlayerManager {
       this.challengePlayer(socket.id, playerId)
     })
     socket.on('accept', (playerId) => {
-      this.startGame(socket.id, playerId)
+      this.startGame(playerId, socket.id)
     })
 
     socket.on('forfeit', () => {})
@@ -46,7 +46,7 @@ export class PlayerManager {
   }
 
   startGame(attacker: string, defender: string) {
-    const game = new GameState(
+    const game = new BattleshipGameInstance(
       this.players[attacker],
       this.players[defender],
       this.io

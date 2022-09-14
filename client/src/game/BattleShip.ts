@@ -2,11 +2,13 @@ import { Experience } from '../engine/Experience'
 import { io } from 'socket.io-client'
 import { TypedClient } from '../../../types/socket-types'
 import { UIManager } from './UIManager'
+import { ClientGameState } from './ClientGameState'
 
 export class BattleShip implements Experience {
   resources = []
   socket!: TypedClient
   uiManager!: UIManager
+  gameState!: ClientGameState
 
   constructor() {}
 
@@ -15,7 +17,8 @@ export class BattleShip implements Experience {
       transports: ['websocket'],
     }) as TypedClient
 
-    this.uiManager = new UIManager(this.socket)
+    this.gameState = new ClientGameState(this.socket)
+    this.uiManager = new UIManager(this.socket, this.gameState)
   }
 
   update() {}

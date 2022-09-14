@@ -7,6 +7,14 @@ export type ServerToClientEvents = {
   challenge: (attacker: string) => void
   startGame: (opponent: string) => void
   initGrid: (grid: number[][]) => void
+  yourTurn: () => void
+  endTurn: () => void
+  result: (result: {
+    firedBy: string
+    x: number
+    y: number
+    hit: boolean
+  }) => void
 }
 
 export type ClientToServerEvents = {
@@ -14,6 +22,7 @@ export type ClientToServerEvents = {
   challenge: (playerId: string) => void
   accept: (playerId: string) => void
   forfeit: () => void
+  fire: (x: number, y: number) => void
 }
 
 export type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>
