@@ -2,6 +2,8 @@ import { Player } from './player-types'
 import { Server, Socket } from 'socket.io'
 import { Socket as ClientSocket } from 'socket.io-client'
 
+export type GameOverReason = 'win' | 'lose' | 'forfeit' | 'disconnect'
+
 export type ServerToClientEvents = {
   updatePlayers: (players: Record<string, Player>) => void
   challenge: (attacker: string) => void
@@ -15,6 +17,7 @@ export type ServerToClientEvents = {
     y: number
     hit: boolean
   }) => void
+  gameOver: (reason: GameOverReason) => void
 }
 
 export type ClientToServerEvents = {

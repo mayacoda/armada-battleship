@@ -55,6 +55,7 @@ export class GameUIManager {
 
     const gameContainer = document.createElement('div')
     gameContainer.style.padding = '1rem'
+    gameContainer.id = 'game-container'
 
     // show opponent name
     const opponentName = opponent.name
@@ -67,9 +68,13 @@ export class GameUIManager {
     // show forfeit game button
     const cancelButton = document.createElement('button')
     cancelButton.innerText = 'Forfeit Game'
+    let alreadyForfeited = false
     cancelButton.addEventListener('click', () => {
-      // forfeit the game
-      this.socket.emit('forfeit')
+      if (!alreadyForfeited) {
+        // forfeit the game
+        alreadyForfeited = true
+        this.socket.emit('forfeit')
+      }
     })
 
     gameContainer.appendChild(cancelButton)
@@ -119,6 +124,11 @@ export class GameUIManager {
         }
       })
     })
+  }
+
+  destroyGameUI() {
+    const gameContainer = document.querySelector('#game-container')
+    gameContainer?.remove()
   }
 
   fireAtEnemy(e: Event) {

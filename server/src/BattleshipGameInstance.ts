@@ -1,5 +1,5 @@
 import { Player } from '../../types/player-types'
-import { TypedServer } from '../../types/socket-types'
+import { GameOverReason, TypedServer } from '../../types/socket-types'
 import { EventEmitter } from 'events'
 import { GRID_SIZE, TOTAL_SHIPS } from '../../constants/constants.js'
 
@@ -7,6 +7,8 @@ type BattleshipPlayer = Player & {
   grid: number[][]
   shipsSunk: number
 }
+
+type EndState = Record<string, GameOverReason>
 
 export class BattleshipGameInstance extends EventEmitter {
   gameId: string
@@ -53,6 +55,32 @@ export class BattleshipGameInstance extends EventEmitter {
       this.fire(this.player1, this.player2, x, y)
       player2Socket.emit('endTurn')
       player1Socket.emit('yourTurn')
+    })
+
+    player1Socket.on('forfeit', () => {
+      this.gameOver({
+        [this.player1.id]: 'forfeit',
+        [this.player2.id]: 'win',
+      })
+    })
+
+    player2Socket.on('forfeit', () => {
+      this.gameOver({
+        [this.player1.id]: 'win',
+        [this.player2.id]: 'forfeit',
+      })
+    })
+
+    player1Socket.on('disconnect', () => {
+      this.gameOver({
+        [this.player2.id]: 'disconnect',
+      })
+    })
+
+    player2Socket.on('disconnect', () => {
+      this.gameOver({
+        [this.player1.id]: 'disconnect',
+      })
     })
   }
 
@@ -142,13 +170,20 @@ export class BattleshipGameInstance extends EventEmitter {
 
       receiving.shipsSunk++
       if (receiving.shipsSunk === TOTAL_SHIPS) {
-        this.endGame('win')
+        this.gameOver({
+          [receiving.id]: 'lose',
+          [firing.id]: 'win',
+        })
       }
     }
   }
 
-  endGame(reason: 'disconnect' | 'forfeit' | 'win') {
-    // cleanup
-    this.emit('endGame', reason)
+  gameOver(endState: EndState) {
+    Object.entries(([id, reason]: [string, GameOverReason]) => {
+      const socket = this.io.sockets.sockets.get(id)
+      if (socket) {
+        socket.emit('gameOver', reason)
+      }
+    })
   }
 }

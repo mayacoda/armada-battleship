@@ -7,6 +7,7 @@ export class UIManager {
   uiLayer: HTMLDivElement
   socket: TypedClient
   gameState: ClientGameState
+  gameUIManager: GameUIManager | null = null
   players: Record<string, Player> = {}
   isGameActive: boolean = false
 
@@ -30,9 +31,15 @@ export class UIManager {
     })
 
     this.socket.on('startGame', (opponentId: string) => {
-      console.log('starting the game?')
       this.startGame(opponentId)
     })
+
+    this.socket.on(
+      'gameOver',
+      (reason: 'win' | 'lose' | 'disconnect' | 'forfeit') => {
+        this.showGameOverModal(reason)
+      }
+    )
   }
 
   // Login
@@ -40,7 +47,7 @@ export class UIManager {
     const loginForm = document.createElement('form')
     loginForm.id = 'login-form'
     loginForm.innerHTML = `
-      <input type="text" name="username" placeholder="Username" />
+      <input type="text" name="username" placeholder="Username" autocomplete="off" />
       <input type="submit" value="Login" />
     `
     // add padding and style to log in form
@@ -130,12 +137,62 @@ export class UIManager {
     })
   }
 
+  showGameOverModal(reason: 'win' | 'lose' | 'disconnect' | 'forfeit') {
+    // create overlay to prevent user from clicking on anything else
+    const overlay = document.createElement('div')
+    overlay.style.position = 'fixed'
+    overlay.style.top = '0'
+    overlay.style.left = '0'
+    overlay.style.width = '100%'
+    overlay.style.height = '100%'
+    overlay.style.backgroundColor = 'rgba(0,0,0,0.5)'
+    this.uiLayer.appendChild(overlay)
+
+    let text = ''
+    switch (reason) {
+      case 'win':
+        text = 'You won! ✨'
+        break
+      case 'lose':
+        text = 'You lost! 😢'
+        break
+      case 'forfeit':
+        text = 'You forfeited! 😱'
+        break
+      case 'disconnect':
+        text = 'Your opponent disconnected! 💔'
+        break
+    }
+
+    const gameOverModal = document.createElement('div')
+    gameOverModal.id = 'game-over-modal'
+    gameOverModal.innerHTML = `
+      <h1>Game Over</h1>
+      <p>${text}</p>
+      <button id="play-again">Okay</button>
+    `
+    gameOverModal.style.padding = '1rem'
+    gameOverModal.style.backgroundColor = '#fff'
+    gameOverModal.style.textAlign = 'center'
+    overlay.appendChild(gameOverModal)
+
+    const button = gameOverModal.querySelector(
+      '#play-again'
+    ) as HTMLButtonElement
+    button.addEventListener('click', () => {
+      this.gameUIManager?.destroyGameUI()
+      this.gameUIManager = null
+      this.isGameActive = false
+      overlay.remove()
+      this.updatePlayerList(this.players, this.socket.id)
+    })
+  }
+
   startGame(opponentId: string) {
-    console.log('Starting game with', opponentId)
     // start the game
     this.isGameActive = true
 
-    const gameManager = new GameUIManager(
+    this.gameUIManager = new GameUIManager(
       this.uiLayer,
       this.socket,
       this.gameState
@@ -144,6 +201,6 @@ export class UIManager {
     const opponent = this.players[opponentId]
     if (!opponent) return // todo handle not being able to find the opponent
 
-    gameManager.createGameUI(opponent)
+    this.gameUIManager.createGameUI(opponent)
   }
 }
