@@ -4,10 +4,12 @@ import { Socket as ClientSocket } from 'socket.io-client'
 
 export type GameOverReason = 'win' | 'lose' | 'forfeit' | 'disconnect'
 
+export type EndState = Record<string, GameOverReason>
+
 export type ServerToClientEvents = {
   updatePlayers: (players: Record<string, Player>) => void
   challenge: (attacker: string) => void
-  startGame: (opponent: string) => void
+  startGame: (param: { attacker: string; defender: string }) => void
   initGrid: (grid: number[][]) => void
   yourTurn: () => void
   endTurn: () => void
@@ -17,7 +19,7 @@ export type ServerToClientEvents = {
     y: number
     hit: boolean
   }) => void
-  gameOver: (reason: GameOverReason) => void
+  gameOver: (endState: EndState) => void
 }
 
 export type ClientToServerEvents = {

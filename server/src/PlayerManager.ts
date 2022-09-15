@@ -27,8 +27,6 @@ export class PlayerManager {
     socket.on('accept', (playerId) => {
       this.startGame(playerId, socket.id)
     })
-
-    socket.on('forfeit', () => {})
   }
 
   addPlayer(player: Player) {
@@ -52,10 +50,8 @@ export class PlayerManager {
       this.io
     )
     this.games[game.gameId] = game
-    game.on('endGame', () => {
+    game.on('gameOver', () => {
       delete this.games[game.gameId]
     })
   }
-
-  forfeitGame(playerId: string) {}
 }

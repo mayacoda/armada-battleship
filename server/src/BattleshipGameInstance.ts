@@ -1,20 +1,30 @@
 import { Player } from '../../types/player-types'
-import { GameOverReason, TypedServer } from '../../types/socket-types'
+import { EndState, TypedServer, TypedSocket } from '../../types/socket-types'
 import { EventEmitter } from 'events'
 import { GRID_SIZE, TOTAL_SHIPS } from '../../constants/constants.js'
+import { placeShip } from './game-logic.js'
 
 type BattleshipPlayer = Player & {
   grid: number[][]
   shipsSunk: number
 }
 
-type EndState = Record<string, GameOverReason>
+type FireParams = {
+  receiving: BattleshipPlayer
+  firing: BattleshipPlayer
+  x: number
+  y: number
+}
+
+type Listener = () => void
 
 export class BattleshipGameInstance extends EventEmitter {
   gameId: string
   player1: BattleshipPlayer
   player2: BattleshipPlayer
   io: TypedServer
+
+  disconnectOffHandlers: Listener[] = []
 
   constructor(attacker: Player, defender: Player, io: TypedServer) {
     super()
@@ -30,11 +40,15 @@ export class BattleshipGameInstance extends EventEmitter {
 
     if (!player1Socket || !player2Socket) {
       return
-      // todo: end game here for both players
     }
 
-    player1Socket.emit('startGame', this.player2.id)
-    player2Socket.emit('startGame', this.player1.id)
+    // both players join the same room
+    player1Socket.join(this.gameId)
+    player2Socket.join(this.gameId)
+
+    this.io
+      .to(this.gameId)
+      .emit('startGame', { attacker: attacker.id, defender: defender.id })
 
     this.initGrids()
 
@@ -45,43 +59,54 @@ export class BattleshipGameInstance extends EventEmitter {
 
     player1Socket.emit('yourTurn')
 
-    player1Socket.on('fire', (x: number, y: number) => {
-      this.fire(this.player2, this.player1, x, y)
-      player1Socket.emit('endTurn')
-      player2Socket.emit('yourTurn')
-    })
+    this.handleFireEvents(player1Socket, player2Socket)
+    this.handleForfeitEvents(player1Socket, player2Socket)
+    this.handleDisconnectEvents(player1Socket, player2Socket)
+  }
 
-    player2Socket.on('fire', (x: number, y: number) => {
-      this.fire(this.player1, this.player2, x, y)
-      player2Socket.emit('endTurn')
-      player1Socket.emit('yourTurn')
-    })
-
-    player1Socket.on('forfeit', () => {
-      this.gameOver({
-        [this.player1.id]: 'forfeit',
-        [this.player2.id]: 'win',
+  private handleFireEvents(...sockets: TypedSocket[]) {
+    for (const socket of sockets) {
+      socket.on('fire', (x: number, y: number) => {
+        this.fire({
+          receiving: this.findEnemy(socket.id),
+          firing: this.findPlayer(socket.id),
+          x,
+          y,
+        })
+        socket.emit('endTurn')
+        socket.to(this.gameId).emit('yourTurn')
       })
-    })
+    }
+  }
 
-    player2Socket.on('forfeit', () => {
-      this.gameOver({
-        [this.player1.id]: 'win',
-        [this.player2.id]: 'forfeit',
+  private handleForfeitEvents(...sockets: TypedSocket[]) {
+    for (const socket of sockets) {
+      socket.on('forfeit', () => {
+        const endState: EndState = {}
+        for (const soc of sockets) {
+          endState[soc.id] = soc.id === socket.id ? 'forfeit' : 'win'
+        }
+        this.io.emit('gameOver', endState)
+        this.cleanUp()
       })
-    })
+    }
+  }
 
-    player1Socket.on('disconnect', () => {
-      this.gameOver({
-        [this.player2.id]: 'disconnect',
+  private handleDisconnectEvents(...sockets: TypedSocket[]) {
+    for (const socket of sockets) {
+      const disconnectListener = () => {
+        const endState: EndState = {}
+        for (const soc of sockets) {
+          endState[soc.id] = 'disconnect'
+        }
+        this.io.to(this.gameId).emit('gameOver', endState)
+        this.cleanUp()
+      }
+      this.disconnectOffHandlers.push(() => {
+        socket.off('disconnect', disconnectListener)
       })
-    })
-
-    player2Socket.on('disconnect', () => {
-      this.gameOver({
-        [this.player1.id]: 'disconnect',
-      })
-    })
+      socket.on('disconnect', disconnectListener)
+    }
   }
 
   initGrids() {
@@ -96,53 +121,18 @@ export class BattleshipGameInstance extends EventEmitter {
     }
 
     // set up ships randomly for each player
-    this.placeShip(this.player1.grid, 4)
-    this.placeShip(this.player1.grid, 3)
-    this.placeShip(this.player1.grid, 2)
-    this.placeShip(this.player1.grid, 1)
+    placeShip(this.player1.grid, 4)
+    placeShip(this.player1.grid, 3)
+    placeShip(this.player1.grid, 2)
+    placeShip(this.player1.grid, 1)
 
-    this.placeShip(this.player2.grid, 4)
-    this.placeShip(this.player2.grid, 3)
-    this.placeShip(this.player2.grid, 2)
-    this.placeShip(this.player2.grid, 1)
+    placeShip(this.player2.grid, 4)
+    placeShip(this.player2.grid, 3)
+    placeShip(this.player2.grid, 2)
+    placeShip(this.player2.grid, 1)
   }
 
-  placeShip(grid: number[][], size: number) {
-    const x = Math.floor(Math.random() * (GRID_SIZE - 1))
-    const y = Math.floor(Math.random() * (GRID_SIZE - 1))
-    const direction = Math.floor(Math.random() * 2)
-    let valid = true
-    for (let i = 0; i < size; i++) {
-      if (direction === 0) {
-        if (x + i >= GRID_SIZE || grid[x + i][y] !== 0) {
-          valid = false
-        }
-      } else {
-        if (y + i >= GRID_SIZE || grid[x][y + i] !== 0) {
-          valid = false
-        }
-      }
-    }
-    if (valid) {
-      for (let i = 0; i < size; i++) {
-        if (direction === 0) {
-          grid[x + i][y] = size
-        } else {
-          grid[x][y + i] = size
-        }
-      }
-    } else {
-      this.placeShip(grid, size)
-    }
-  }
-
-  fire(
-    receiving: BattleshipPlayer,
-    firing: BattleshipPlayer,
-    x: number,
-    y: number
-  ) {
-    console.log(`got a fire from ${firing.id} at ${x}, ${y}`)
+  fire({ receiving, firing, x, y }: FireParams) {
     const receivingSocket = this.io.sockets.sockets.get(receiving.id)
     const firingSocket = this.io.sockets.sockets.get(firing.id)
 
@@ -170,20 +160,41 @@ export class BattleshipGameInstance extends EventEmitter {
 
       receiving.shipsSunk++
       if (receiving.shipsSunk === TOTAL_SHIPS) {
-        this.gameOver({
+        this.io.to(this.gameId).emit('gameOver', {
           [receiving.id]: 'lose',
           [firing.id]: 'win',
         })
+        this.cleanUp()
       }
     }
   }
 
-  gameOver(endState: EndState) {
-    Object.entries(([id, reason]: [string, GameOverReason]) => {
-      const socket = this.io.sockets.sockets.get(id)
-      if (socket) {
-        socket.emit('gameOver', reason)
-      }
-    })
+  findPlayer(socketId: string) {
+    return this.player1.id === socketId ? this.player1 : this.player2
+  }
+
+  findEnemy(socketId: string) {
+    return this.player1.id === socketId ? this.player2 : this.player1
+  }
+
+  cleanUp() {
+    this.io
+      .in(this.gameId)
+      .allSockets()
+      .then((socketIds) => {
+        for (const socketId of socketIds) {
+          // remove 'forfeit' and 'fire' listeners
+          this.io.sockets.sockets.get(socketId)?.removeAllListeners('forfeit')
+          this.io.sockets.sockets.get(socketId)?.removeAllListeners('fire')
+        }
+      })
+
+    // remove disconnect listeners
+    for (const offHandler of this.disconnectOffHandlers) {
+      offHandler()
+    }
+
+    this.io.socketsLeave(this.gameId)
+    this.emit('gameOver')
   }
 }

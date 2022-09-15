@@ -1,5 +1,5 @@
 import { Player } from '../../../types/player-types'
-import { TypedClient } from '../../../types/socket-types'
+import { EndState, TypedClient } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
 
@@ -30,16 +30,18 @@ export class UIManager {
       this.showChallenge(attackerId)
     })
 
-    this.socket.on('startGame', (opponentId: string) => {
-      this.startGame(opponentId)
+    this.socket.on('startGame', ({ attacker, defender }) => {
+      if (this.socket.id === attacker) {
+        this.startGame(defender)
+      } else {
+        this.startGame(attacker)
+      }
     })
 
-    this.socket.on(
-      'gameOver',
-      (reason: 'win' | 'lose' | 'disconnect' | 'forfeit') => {
-        this.showGameOverModal(reason)
-      }
-    )
+    this.socket.on('gameOver', (state: EndState) => {
+      const reason = state[this.gameState.id]
+      this.showGameOverModal(reason)
+    })
   }
 
   // Login
