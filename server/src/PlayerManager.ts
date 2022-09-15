@@ -19,6 +19,7 @@ export class PlayerManager {
       this.addPlayer({
         id: socket.id,
         name: name,
+        isPlaying: false,
       })
     })
     socket.on('challenge', (playerId) => {
@@ -44,13 +45,18 @@ export class PlayerManager {
   }
 
   startGame(attacker: string, defender: string) {
-    const game = new BattleshipGameInstance(
-      this.players[attacker],
-      this.players[defender],
-      this.io
-    )
+    const player1 = this.players[attacker]
+    const player2 = this.players[defender]
+    player1.isPlaying = true
+    player2.isPlaying = true
+    this.io.emit('updatePlayers', this.players)
+
+    const game = new BattleshipGameInstance(player1, player2, this.io)
     this.games[game.gameId] = game
     game.on('gameOver', () => {
+      player1.isPlaying = false
+      player2.isPlaying = false
+      this.io.emit('updatePlayers', this.players)
       delete this.games[game.gameId]
     })
   }

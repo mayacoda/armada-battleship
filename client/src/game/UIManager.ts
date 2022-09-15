@@ -2,6 +2,7 @@ import { Player } from '../../../types/player-types'
 import { EndState, TypedClient } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
+import { createGameOverOverlay } from './html/helpers'
 
 export class UIManager {
   uiLayer: HTMLDivElement
@@ -22,7 +23,7 @@ export class UIManager {
     const userName = await this.showLogin()
     this.socket.emit('login', userName)
 
-    this.socket.on('updatePlayers', (players) => {
+    this.gameState.on('updatePlayers', (players: Record<string, Player>) => {
       this.updatePlayerList(players, this.socket.id)
     })
 
@@ -70,10 +71,9 @@ export class UIManager {
 
   // Players List
   updatePlayerList(players: Record<string, Player>, currentPlayerId: string) {
-    this.players = players
-
     if (this.isGameActive) return
     const playersListElement = this.getPlayerListElement()
+    playersListElement.style.maxWidth = '100%'
 
     playersListElement.innerHTML = ''
     Object.values(players).forEach((player) => {
@@ -85,6 +85,9 @@ export class UIManager {
       if (player.id === currentPlayerId) {
         challengeButton.disabled = true
         challengeButton.innerText = 'You'
+      } else if (player.isPlaying) {
+        challengeButton.disabled = true
+        challengeButton.innerText = 'Playing'
       } else {
         challengeButton.innerText = 'Challenge'
         challengeButton.addEventListener('click', () => {
@@ -107,27 +110,46 @@ export class UIManager {
   }
 
   showChallenge(attacker: string) {
+    let timeLeft = 9
+    // create a countdown timer for the challenge of 10 seconds
+    const timer = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(timer)
+        challengeElement.remove()
+      } else {
+        // floor time left to the nearest second
+        acceptButton.innerText = `Accept (${timeLeft})`
+      }
+      timeLeft -= 1
+    }, 1000)
+
     const challengeElement = document.createElement('div')
     challengeElement.id = 'challenge'
     challengeElement.innerHTML = `
-      <p>${this.players[attacker]?.name ?? attacker} is challenging you!</p>
-      <button id="accept">Accept</button>
+      <p>${
+        this.gameState.players[attacker]?.name ?? attacker
+      } is challenging you!</p>
+      <button id="accept">Accept (${timeLeft + 1})</button>
       <button id="reject">Reject</button>
     `
     challengeElement.style.padding = '1rem'
     challengeElement.style.position = 'fixed'
-    challengeElement.style.top = '0'
+    challengeElement.style.bottom = '0'
     challengeElement.style.left = '0'
     challengeElement.style.width = '100%'
     challengeElement.style.backgroundColor = '#fff'
+    challengeElement.style.textAlign = 'center'
+    challengeElement.style.boxSizing = 'border-box'
 
     this.uiLayer.appendChild(challengeElement)
 
     const acceptButton = challengeElement.querySelector(
       '#accept'
     ) as HTMLButtonElement
+
     acceptButton.addEventListener('click', () => {
       this.socket.emit('accept', attacker)
+      this.cleanUpGame()
       challengeElement.remove()
     })
 
@@ -140,57 +162,24 @@ export class UIManager {
   }
 
   showGameOverModal(reason: 'win' | 'lose' | 'disconnect' | 'forfeit') {
-    // create overlay to prevent user from clicking on anything else
-    const overlay = document.createElement('div')
-    overlay.style.position = 'fixed'
-    overlay.style.top = '0'
-    overlay.style.left = '0'
-    overlay.style.width = '100%'
-    overlay.style.height = '100%'
-    overlay.style.backgroundColor = 'rgba(0,0,0,0.5)'
-    this.uiLayer.appendChild(overlay)
-
-    let text = ''
-    switch (reason) {
-      case 'win':
-        text = 'You won! ✨'
-        break
-      case 'lose':
-        text = 'You lost! 😢'
-        break
-      case 'forfeit':
-        text = 'You forfeited! 😱'
-        break
-      case 'disconnect':
-        text = 'Your opponent disconnected! 💔'
-        break
-    }
-
-    const gameOverModal = document.createElement('div')
-    gameOverModal.id = 'game-over-modal'
-    gameOverModal.innerHTML = `
-      <h1>Game Over</h1>
-      <p>${text}</p>
-      <button id="play-again">Okay</button>
-    `
-    gameOverModal.style.padding = '1rem'
-    gameOverModal.style.backgroundColor = '#fff'
-    gameOverModal.style.textAlign = 'center'
-    overlay.appendChild(gameOverModal)
-
-    const button = gameOverModal.querySelector(
-      '#play-again'
-    ) as HTMLButtonElement
-    button.addEventListener('click', () => {
-      this.gameUIManager?.destroyGameUI()
-      this.gameUIManager = null
-      this.isGameActive = false
-      overlay.remove()
-      this.updatePlayerList(this.players, this.socket.id)
+    const overlay = createGameOverOverlay(reason, () => {
+      this.cleanUpGame()
+      this.updatePlayerList(this.gameState.players, this.socket.id)
     })
+    this.uiLayer.appendChild(overlay)
+  }
+
+  cleanUpGame() {
+    this.gameUIManager?.destroyGameUI()
+    this.gameUIManager = null
+    this.isGameActive = false
+    this.uiLayer.querySelector('#overlay')?.remove()
   }
 
   startGame(opponentId: string) {
+    const opponent = this.gameState.players[opponentId]
+    if (!opponent) return // todo handle not being able to find the opponent
+
     // start the game
     this.isGameActive = true
 
@@ -199,9 +188,6 @@ export class UIManager {
       this.socket,
       this.gameState
     )
-
-    const opponent = this.players[opponentId]
-    if (!opponent) return // todo handle not being able to find the opponent
 
     this.gameUIManager.createGameUI(opponent)
   }

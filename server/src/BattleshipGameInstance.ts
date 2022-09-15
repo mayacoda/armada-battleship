@@ -86,7 +86,7 @@ export class BattleshipGameInstance extends EventEmitter {
         for (const soc of sockets) {
           endState[soc.id] = soc.id === socket.id ? 'forfeit' : 'win'
         }
-        this.io.emit('gameOver', endState)
+        this.io.to(this.gameId).emit('gameOver', endState)
         this.cleanUp()
       })
     }
