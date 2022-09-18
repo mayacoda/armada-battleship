@@ -24,7 +24,7 @@ export class BattleShip implements Experience {
   constructor(private engine: Engine) {}
 
   async init() {
-    this.socket = io(import.meta.env.SERVER_URL ?? 'ws://localhost:3000', {
+    this.socket = io(import.meta.env.VITE_SERVER_URL ?? 'ws://localhost:3000', {
       transports: ['websocket'],
     }) as TypedClient
 
