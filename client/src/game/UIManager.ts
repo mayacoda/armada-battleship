@@ -10,7 +10,6 @@ export class UIManager {
   gameState: ClientGameState
   gameUIManager: GameUIManager | null = null
   players: Record<string, Player> = {}
-  isGameActive: boolean = false
 
   constructor(socket: TypedClient, gameState: ClientGameState) {
     this.socket = socket
@@ -21,7 +20,6 @@ export class UIManager {
 
   async init() {
     const userName = await this.showLogin()
-    this.socket.emit('login', userName)
 
     this.gameState.on('updatePlayers', (players: Record<string, Player>) => {
       this.updatePlayerList(players, this.socket.id)
@@ -43,6 +41,9 @@ export class UIManager {
       const reason = state[this.gameState.id]
       this.showGameOverModal(reason)
     })
+
+    this.socket.emit('login', userName)
+    this.gameState.setScene('idle')
   }
 
   // Login
@@ -71,7 +72,7 @@ export class UIManager {
 
   // Players List
   updatePlayerList(players: Record<string, Player>, currentPlayerId: string) {
-    if (this.isGameActive) return
+    if (this.gameState.scene !== 'idle') return
     const playersListElement = this.getPlayerListElement()
     playersListElement.style.maxWidth = '100%'
 
@@ -172,7 +173,7 @@ export class UIManager {
   cleanUpGame() {
     this.gameUIManager?.destroyGameUI()
     this.gameUIManager = null
-    this.isGameActive = false
+    this.gameState.setScene('idle')
     this.uiLayer.querySelector('#overlay')?.remove()
   }
 
@@ -181,7 +182,7 @@ export class UIManager {
     if (!opponent) return // todo handle not being able to find the opponent
 
     // start the game
-    this.isGameActive = true
+    this.gameState.setScene('playing')
 
     this.gameUIManager = new GameUIManager(
       this.uiLayer,

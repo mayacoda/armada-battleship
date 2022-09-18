@@ -137,3 +137,11 @@ export function createGameUI(
   gameContainer.appendChild(battleshipGame)
   return gameContainer
 }
+
+export function tryCatch(cb: (...args: any[]) => void) {
+  try {
+    cb()
+  } catch (e) {
+    console.error(e)
+  }
+}

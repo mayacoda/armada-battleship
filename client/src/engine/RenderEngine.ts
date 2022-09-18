@@ -18,7 +18,7 @@ export class RenderEngine implements GameEntity {
     this.renderer.toneMappingExposure = 1.75
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
-    this.renderer.setClearColor('#000000')
+    this.renderer.setClearColor('#737373')
     this.renderer.setSize(this.engine.sizes.width, this.engine.sizes.height)
     this.renderer.setPixelRatio(Math.min(this.engine.sizes.pixelRatio, 2))
   }

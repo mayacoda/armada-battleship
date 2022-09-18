@@ -1,7 +1,6 @@
 html,
 body,
-#canvas,
-#ui {
+#canvas {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -12,7 +11,7 @@ body,
 html,
 body,
 #canvas {
-  background: #000;
+  background: #737373;
 }
 
 #canvas {
@@ -20,8 +19,14 @@ body,
 }
 
 #ui {
-  background-color: white;
+  position: absolute;
+  top: 0;
   margin: 0 auto;
-  height: 100%;
-  width: 480px;
+  height: 100vh;
+  width: 100%;
+  pointer-events: none !important;
+}
+
+#ui > * {
+  pointer-events: all !important;
 }

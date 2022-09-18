@@ -1,6 +1,7 @@
 import { Player } from '../../types/player-types'
 import { TypedServer, TypedSocket } from '../../types/socket-types'
 import { BattleshipGameInstance } from './BattleshipGameInstance.js'
+import { randomVec3 } from './math.js'
 
 export class PlayerManager {
   players: Record<string, Player> = {}
@@ -20,6 +21,7 @@ export class PlayerManager {
         id: socket.id,
         name: name,
         isPlaying: false,
+        position: randomVec3(),
       })
     })
     socket.on('challenge', (playerId) => {

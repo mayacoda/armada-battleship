@@ -2,10 +2,14 @@ import { TypedClient } from '../../../types/socket-types'
 import { EventEmitter } from '../engine/utilities/EventEmitter'
 import { Player } from '../../../types/player-types'
 
+export type SceneType = 'login' | 'idle' | 'playing'
+
 export class ClientGameState extends EventEmitter {
   private yourTurn: boolean = false
   private socket: TypedClient
   private playersMap: Record<string, Player> = {}
+
+  private currentScene: SceneType = 'login'
 
   constructor(socket: TypedClient) {
     super()
@@ -27,6 +31,11 @@ export class ClientGameState extends EventEmitter {
     })
   }
 
+  setScene(scene: SceneType) {
+    this.currentScene = scene
+    this.emit('sceneChanged', scene)
+  }
+
   get isYourTurn() {
     return this.yourTurn
   }
@@ -37,5 +46,17 @@ export class ClientGameState extends EventEmitter {
 
   get players() {
     return this.playersMap
+  }
+
+  get scene() {
+    return this.currentScene
+  }
+
+  get globeScale() {
+    return 4 + Math.sqrt(Object.keys(this.players).length)
+  }
+
+  get currentPlayer() {
+    return this.players[this.id]
   }
 }

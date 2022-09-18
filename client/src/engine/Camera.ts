@@ -9,13 +9,13 @@ export class Camera implements GameEntity {
 
   constructor(private engine: Engine) {
     this.initCamera()
-    this.initControls()
+    // this.initControls()
   }
 
   private initCamera() {
     this.instance = new THREE.PerspectiveCamera(
-      75,
-      window.innerWidth / window.innerHeight,
+      50,
+      this.engine.sizes.width / this.engine.sizes.height,
       0.1,
       1000
     )
@@ -24,10 +24,10 @@ export class Camera implements GameEntity {
     this.engine.scene.add(this.instance)
   }
 
-  private initControls() {
-    this.controls = new OrbitControls(this.instance, this.engine.canvas)
-    this.controls.update()
-  }
+  // private initControls() {
+  //   this.controls = new OrbitControls(this.instance, this.engine.canvas)
+  //   this.controls.update()
+  // }
 
   resize() {
     this.instance.aspect = this.engine.sizes.aspectRatio
@@ -35,6 +35,6 @@ export class Camera implements GameEntity {
   }
 
   update() {
-    this.controls.update()
+    this.controls?.update()
   }
 }
