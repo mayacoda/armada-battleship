@@ -28,6 +28,7 @@ export type ClientToServerEvents = {
   accept: (playerId: string) => void
   forfeit: () => void
   fire: (x: number, y: number) => void
+  move: (position: { x: number; y: number; z: number }) => void
 }
 
 export type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>

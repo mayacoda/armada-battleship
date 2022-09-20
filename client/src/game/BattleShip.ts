@@ -9,6 +9,7 @@ import { Globe } from './Globe'
 import { Engine } from '../engine/Engine'
 import { Player } from '../../../types/player-types'
 import { tryCatch } from './html/helpers'
+import { PlayerBoat } from './PlayerBoat'
 
 export class BattleShip implements Experience {
   resources = []
@@ -18,8 +19,10 @@ export class BattleShip implements Experience {
 
   otherPlayers: Record<string, THREE.Object3D> = {}
 
-  boat: Boat = new Boat('#bb4a0d')
-  globe: Globe = new Globe()
+  currentPlayer!: PlayerBoat
+  globe!: Globe
+
+  ready: boolean = false
 
   constructor(private engine: Engine) {}
 
@@ -43,65 +46,33 @@ export class BattleShip implements Experience {
   }
 
   update() {
+    if (!this.ready) return
     for (const player of Object.values(this.otherPlayers)) {
       player.lookAt(this.globe.position)
     }
 
-    this.updatePlayerPosition()
-    this.updateCameraPosition()
+    this.currentPlayer.update()
   }
 
   resize() {}
 
   private initializeScene() {
+    this.currentPlayer = new PlayerBoat(
+      this.socket,
+      this.engine,
+      this.gameState
+    )
+    this.globe = new Globe()
+
     let scale = this.gameState.globeScale
     this.globe.scale.setScalar(scale)
+
     this.engine.scene.add(this.globe)
-    this.engine.scene.add(this.boat)
+    this.engine.scene.add(this.currentPlayer)
 
-    this.updatePlayerPosition()
-    this.updateCameraPosition()
-  }
+    this.currentPlayer.update()
 
-  // move to player class
-  private updateCameraPosition() {
-    const lookAtOffset = new THREE.Vector3(0, 1.15, 0)
-    const objectPosition = new THREE.Vector3()
-    this.boat.getWorldPosition(objectPosition)
-
-    const globePosition = new THREE.Vector3()
-    this.globe.getWorldPosition(globePosition)
-    const boatPosition = new THREE.Vector3()
-    this.boat.getWorldPosition(boatPosition)
-
-    const direction = boatPosition.clone().sub(globePosition).normalize()
-
-    const cameraPosition = objectPosition
-      .clone()
-      .add(direction.multiplyScalar(6))
-    const cameraLookAt = objectPosition.clone().add(lookAtOffset)
-
-    this.engine.camera.instance.position.copy(cameraPosition)
-    this.engine.camera.instance.lookAt(
-      cameraLookAt.x,
-      cameraLookAt.y,
-      cameraLookAt.z
-    )
-  }
-
-  // move to player class
-  private updatePlayerPosition() {
-    let position = new THREE.Vector3(1, 1, 0)
-
-    if (this.gameState?.currentPlayer) {
-      const { x, y, z } = this.gameState.currentPlayer.position
-      position = new THREE.Vector3(x, y, z)
-    }
-
-    position.normalize().multiplyScalar(this.gameState?.globeScale ?? 1)
-
-    this.boat.position.set(position.x, position.y, position.z)
-    this.boat.lookAt(this.globe.position)
+    this.ready = true
   }
 
   private updateGlobe() {
@@ -115,8 +86,9 @@ export class BattleShip implements Experience {
       if (player.id === this.gameState.id) continue
 
       if (!this.otherPlayers[player.id]) {
-        this.otherPlayers[player.id] = new Boat()
-        this.otherPlayers[player.id].name = player.id
+        const boat = new Boat()
+        boat.userData.id = player.id
+        this.otherPlayers[player.id] = boat
         this.engine.scene.add(this.otherPlayers[player.id])
       }
 

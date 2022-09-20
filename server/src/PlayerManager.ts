@@ -30,6 +30,13 @@ export class PlayerManager {
     socket.on('accept', (playerId) => {
       this.startGame(playerId, socket.id)
     })
+    socket.on('move', (position) => {
+      const player = this.players[socket.id]
+      if (player) {
+        player.position = position
+        this.io.emit('updatePlayers', this.players)
+      }
+    })
   }
 
   addPlayer(player: Player) {

@@ -19,7 +19,7 @@ export class UIManager {
   }
 
   async init() {
-    const userName = await this.showLogin()
+    // const userName = await this.showLogin()
 
     this.gameState.on('updatePlayers', (players: Record<string, Player>) => {
       this.updatePlayerList(players, this.socket.id)
@@ -42,7 +42,8 @@ export class UIManager {
       this.showGameOverModal(reason)
     })
 
-    this.socket.emit('login', userName)
+    this.socket.emit('login', 'Sam')
+    // this.socket.emit('login', userName)
     this.gameState.setScene('idle')
   }
 

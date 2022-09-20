@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 
 export class Globe extends THREE.Mesh {
+  name = 'globe'
+
   constructor() {
     super()
     this.geometry = new THREE.SphereGeometry(1, 32, 32)

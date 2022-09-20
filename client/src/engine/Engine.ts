@@ -8,6 +8,7 @@ import { Resources } from './Resources'
 import { InfoConfig, InfoUI } from './interface/InfoUI'
 import { Experience, ExperienceConstructor } from './Experience'
 import { Loader } from './interface/Loader'
+import { Raycaster } from './Raycaster'
 
 export class Engine {
   public readonly camera!: Camera
@@ -19,6 +20,7 @@ export class Engine {
   public readonly sizes!: Sizes
   public readonly canvas!: HTMLCanvasElement
   public readonly resources!: Resources
+  public readonly raycaster!: Raycaster
   public readonly experience!: Experience
   private readonly loader!: Loader
 
@@ -45,6 +47,7 @@ export class Engine {
     this.renderEngine = new RenderEngine(this)
     this.experience = new experience(this)
     this.resources = new Resources(this.experience.resources)
+    this.raycaster = new Raycaster(this)
     this.loader = new Loader()
 
     this.resources.on('loaded', () => {
@@ -62,6 +65,7 @@ export class Engine {
     this.renderEngine.update()
     this.experience.update(delta)
     this.debug.update()
+    this.raycaster.update()
   }
 
   resize() {
