@@ -17,16 +17,16 @@ export class PlayerManager {
       this.removePlayer(socket.id)
     })
     socket.on('login', (name) => {
-      let position = randomVec3()
-      this.addPlayer({
+      let player: Player = {
         id: socket.id,
         name: name,
         isPlaying: false,
-        position,
+        position: randomVec3(),
         rotation: null,
-      })
+      }
+      this.addPlayer(player)
 
-      socket.emit('setPosition', position)
+      socket.emit('initPlayer', player)
     })
     socket.on('challenge', (playerId) => {
       this.challengePlayer(socket.id, playerId)

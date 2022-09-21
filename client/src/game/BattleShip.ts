@@ -17,7 +17,7 @@ export class BattleShip implements Experience {
   uiManager!: UIManager
   gameState!: ClientGameState
 
-  otherPlayers: Record<string, THREE.Object3D> = {}
+  otherPlayers: Record<string, Boat> = {}
 
   currentPlayer!: PlayerBoat
   water!: Water
@@ -32,7 +32,7 @@ export class BattleShip implements Experience {
     }) as TypedClient
 
     this.gameState = new ClientGameState(this.socket)
-    this.uiManager = new UIManager(this.socket, this.gameState)
+    this.uiManager = new UIManager(this.engine, this.socket, this.gameState)
 
     this.gameState.on('updatePlayers', () => {
       if (this.gameState.scene === 'idle') {
@@ -47,6 +47,8 @@ export class BattleShip implements Experience {
 
   update() {
     if (!this.ready) return
+
+    Object.values(this.otherPlayers).forEach((boat) => boat.update())
 
     this.currentPlayer.update()
   }
@@ -83,8 +85,9 @@ export class BattleShip implements Experience {
       if (player.id === this.gameState.id) continue
 
       if (!this.otherPlayers[player.id]) {
-        const boat = new Boat()
+        const boat = new Boat(this.engine)
         boat.userData.id = player.id
+        boat.updateName(player.name)
         this.otherPlayers[player.id] = boat
         this.engine.scene.add(this.otherPlayers[player.id])
       }

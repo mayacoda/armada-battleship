@@ -3,18 +3,19 @@ import { EndState, TypedClient } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
 import { createGameOverOverlay } from './html/helpers'
+import { Engine } from '../engine/Engine'
 
 export class UIManager {
   uiLayer: HTMLDivElement
-  socket: TypedClient
-  gameState: ClientGameState
   gameUIManager: GameUIManager | null = null
   players: Record<string, Player> = {}
 
-  constructor(socket: TypedClient, gameState: ClientGameState) {
-    this.socket = socket
-    this.gameState = gameState
-    this.uiLayer = document.querySelector('#ui') as HTMLDivElement
+  constructor(
+    private engine: Engine,
+    private socket: TypedClient,
+    private gameState: ClientGameState
+  ) {
+    this.uiLayer = this.engine.ui.container
     this.init()
   }
 

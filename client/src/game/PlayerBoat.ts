@@ -4,7 +4,7 @@ import { ClientGameState } from './ClientGameState'
 import { Engine } from '../engine/Engine'
 import { TypedClient } from '../../../types/socket-types'
 import { tryCatch } from './html/helpers'
-import { Vec3 } from '../../../types/player-types'
+import { Player } from '../../../types/player-types'
 
 export class PlayerBoat extends Boat {
   targetPosition: THREE.Vector3 | null = null
@@ -12,10 +12,10 @@ export class PlayerBoat extends Boat {
 
   constructor(
     private socket: TypedClient,
-    private engine: Engine,
+    engine: Engine,
     private gameState: ClientGameState
   ) {
-    super()
+    super(engine)
     this.material.color.set('#bb4a0d')
 
     this.engine.camera.instance.position.set(0, 4, -5)
@@ -27,10 +27,10 @@ export class PlayerBoat extends Boat {
       this.listenForClick(event)
     }
 
-    this.socket.on('setPosition', ({ x, y, z }: Vec3) => {
-      console.log('set position', x, y, z)
+    this.socket.on('initPlayer', (player: Player) => {
+      const { x, y, z } = player.position
       this.setPositionFromVector(new THREE.Vector3(x, y, z))
-      console.log(this.quaternion)
+      this.updateName(player.name)
     })
 
     this.gameState.on('sceneChanged', () => {
@@ -46,6 +46,7 @@ export class PlayerBoat extends Boat {
 
   update() {
     this.updatePlayerPosition()
+    super.update()
   }
 
   private listenForClick(event: THREE.Intersection[]) {

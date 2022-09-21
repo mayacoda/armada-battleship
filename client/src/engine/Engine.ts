@@ -8,6 +8,7 @@ import { Resources } from './Resources'
 import { Experience, ExperienceConstructor } from './Experience'
 import { Loader } from './interface/Loader'
 import { Raycaster } from './Raycaster'
+import { UI } from './UI'
 
 export class Engine {
   public readonly camera!: Camera
@@ -15,6 +16,7 @@ export class Engine {
   public readonly renderEngine!: RenderEngine
   public readonly time!: RenderLoop
   public readonly debug!: DebugUI
+  public readonly ui!: UI
   public readonly sizes!: Sizes
   public readonly canvas!: HTMLCanvasElement
   public readonly resources!: Resources
@@ -39,6 +41,7 @@ export class Engine {
     this.time = new RenderLoop(this)
     this.scene = new THREE.Scene()
     this.camera = new Camera(this)
+    this.ui = new UI()
     this.renderEngine = new RenderEngine(this)
     this.experience = new experience(this)
     this.resources = new Resources(this.experience.resources)
