@@ -1,5 +1,5 @@
 import { Player } from '../../../types/player-types'
-import { EndState, TypedClient } from '../../../types/socket-types'
+import { EndState } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
 import { createGameOverOverlay } from './html/helpers'
@@ -10,11 +10,7 @@ export class UIManager {
   gameUIManager: GameUIManager | null = null
   players: Record<string, Player> = {}
 
-  constructor(
-    private engine: Engine,
-    private socket: TypedClient,
-    private gameState: ClientGameState
-  ) {
+  constructor(private engine: Engine, private gameState: ClientGameState) {
     this.uiLayer = this.engine.ui.container
     this.init()
   }
@@ -23,27 +19,27 @@ export class UIManager {
     const userName = await this.showLogin()
 
     this.gameState.on('updatePlayers', (players: Record<string, Player>) => {
-      this.updatePlayerList(players, this.socket.id)
+      this.updatePlayerList(players, this.engine.socket.id)
     })
 
-    this.socket.on('challenge', (attackerId: string) => {
+    this.engine.socket.on('challenge', (attackerId: string) => {
       this.showChallenge(attackerId)
     })
 
-    this.socket.on('startGame', ({ attacker, defender }) => {
-      if (this.socket.id === attacker) {
+    this.engine.socket.on('startGame', ({ attacker, defender }) => {
+      if (this.engine.socket.id === attacker) {
         this.startGame(defender)
       } else {
         this.startGame(attacker)
       }
     })
 
-    this.socket.on('gameOver', (state: EndState) => {
+    this.engine.socket.on('gameOver', (state: EndState) => {
       const reason = state[this.gameState.id]
       this.showGameOverModal(reason)
     })
 
-    this.socket.emit('login', userName)
+    this.engine.socket.emit('login', userName)
     this.gameState.setScene('idle')
   }
 
@@ -93,7 +89,7 @@ export class UIManager {
       } else {
         challengeButton.innerText = 'Challenge'
         challengeButton.addEventListener('click', () => {
-          this.socket.emit('challenge', player.id)
+          this.engine.socket.emit('challenge', player.id)
         })
       }
       li.appendChild(challengeButton)
@@ -150,7 +146,7 @@ export class UIManager {
     ) as HTMLButtonElement
 
     acceptButton.addEventListener('click', () => {
-      this.socket.emit('accept', attacker)
+      this.engine.socket.emit('accept', attacker)
       this.cleanUpGame()
       challengeElement.remove()
     })
@@ -166,7 +162,7 @@ export class UIManager {
   showGameOverModal(reason: 'win' | 'lose' | 'disconnect' | 'forfeit') {
     const overlay = createGameOverOverlay(reason, () => {
       this.cleanUpGame()
-      this.updatePlayerList(this.gameState.players, this.socket.id)
+      this.updatePlayerList(this.gameState.players, this.engine.socket.id)
     })
     this.uiLayer.appendChild(overlay)
   }
@@ -187,7 +183,7 @@ export class UIManager {
 
     this.gameUIManager = new GameUIManager(
       this.uiLayer,
-      this.socket,
+      this.engine.socket,
       this.gameState
     )
 

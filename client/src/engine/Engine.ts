@@ -9,20 +9,23 @@ import { Experience, ExperienceConstructor } from './Experience'
 import { Loader } from './interface/Loader'
 import { Raycaster } from './Raycaster'
 import { UI } from './UI'
+import { TypedClient } from '../../../types/socket-types'
 
 export class Engine {
-  public readonly camera!: Camera
-  public readonly scene!: THREE.Scene
-  public readonly renderEngine!: RenderEngine
-  public readonly time!: RenderLoop
-  public readonly debug!: DebugUI
-  public readonly ui!: UI
-  public readonly sizes!: Sizes
-  public readonly canvas!: HTMLCanvasElement
-  public readonly resources!: Resources
-  public readonly raycaster!: Raycaster
-  public readonly experience!: Experience
-  private readonly loader!: Loader
+  public readonly camera: Camera
+  public readonly scene: THREE.Scene
+  public readonly renderEngine: RenderEngine
+  public readonly time: RenderLoop
+  public readonly debug: DebugUI
+  public readonly ui: UI
+  public readonly sizes: Sizes
+  public readonly canvas: HTMLCanvasElement
+  public readonly resources: Resources
+  public readonly raycaster: Raycaster
+  public readonly experience: Experience
+  private readonly loader: Loader
+
+  public socket!: TypedClient
 
   constructor({
     canvas,
@@ -56,6 +59,10 @@ export class Engine {
     this.resources.on('progress', (progress: number) => {
       this.loader.setProgress(progress)
     })
+  }
+
+  setSocket(socket: TypedClient) {
+    this.socket = socket
   }
 
   update(delta: number) {

@@ -27,6 +27,8 @@ export class PlayerBoat extends Boat {
       this.listenForClick(event)
     }
 
+    this.userData.isPlayer = true
+
     this.socket.on('initPlayer', (player: Player) => {
       const { x, y, z } = player.position
       this.setPositionFromVector(new THREE.Vector3(x, y, z))
@@ -58,9 +60,12 @@ export class PlayerBoat extends Boat {
         this.targetPosition = hit.point
       } else if (
         hit.object.name === 'boat' &&
-        hit.object.userData.id !== this.gameState.currentPlayer?.id
+        hit.object instanceof Boat &&
+        !hit.object.userData.isPlayer
       ) {
-        console.log('hit another boat!')
+        console.log(hit.object.userData.id, this.gameState.currentPlayer?.id)
+        console.log('hit a boat')
+        hit.object.showChallengeButton()
         // show the boat's menu
       }
     }

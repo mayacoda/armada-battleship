@@ -31,8 +31,10 @@ export class BattleShip implements Experience {
       transports: ['websocket'],
     }) as TypedClient
 
+    this.engine.setSocket(this.socket)
+
     this.gameState = new ClientGameState(this.socket)
-    this.uiManager = new UIManager(this.engine, this.socket, this.gameState)
+    this.uiManager = new UIManager(this.engine, this.gameState)
 
     this.gameState.on('updatePlayers', () => {
       if (this.gameState.scene === 'idle') {

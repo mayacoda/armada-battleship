@@ -1,13 +1,15 @@
 import * as THREE from 'three'
 import { Engine } from '../engine/Engine'
 
-let torusGeometry = new THREE.TorusGeometry(0.3, 0.1, 16, 100)
+const torusGeometry = new THREE.TorusGeometry(0.3, 0.1, 16, 100)
+const frustum = new THREE.Frustum()
 
 export class Boat extends THREE.Mesh {
   name = 'boat'
   material: THREE.MeshBasicMaterial
 
   nameElement: HTMLDivElement
+  challengeButton: HTMLButtonElement
 
   constructor(protected engine: Engine, color = '#4f322b') {
     super()
@@ -19,27 +21,78 @@ export class Boat extends THREE.Mesh {
     this.nameElement = document.createElement('div')
     this.nameElement.classList.add('boat-name')
     this.engine.ui.container.appendChild(this.nameElement)
+
+    this.challengeButton = document.createElement('button')
+    this.challengeButton.classList.add('challenge-button')
+    this.challengeButton.innerText = 'Challenge'
+    this.challengeButton.style.display = 'none'
+    this.engine.ui.container.appendChild(this.challengeButton)
+
+    this.challengeButton.addEventListener('click', (event) => {
+      event.stopPropagation()
+      event.preventDefault()
+      this.engine.socket.emit('challenge', this.userData.id)
+      this.hideChallengeButton()
+    })
   }
 
-  setNamePosition() {
+  get screenPosition() {
     const screenPosition = this.position.clone()
     screenPosition.project(this.engine.camera.instance)
-    const xOffset = this.nameElement.clientWidth / 2
-    const yOffset = 80
+    const x = screenPosition.x * this.engine.sizes.width * 0.5
+    const y = -screenPosition.y * this.engine.sizes.height * 0.5
 
-    const translateX =
-      screenPosition.x * this.engine.sizes.width * 0.5 - xOffset
-    const translateY =
-      -screenPosition.y * this.engine.sizes.height * 0.5 - yOffset
+    return { x, y }
+  }
 
-    this.nameElement.style.transform = `translateX(${translateX}px) translateY(${translateY}px)`
+  updateElementsPosition() {
+    if (!this.isInView) {
+      this.nameElement.style.display = 'none'
+      this.challengeButton.style.display = 'none'
+      return
+    }
+
+    this.nameElement.style.display = 'block'
+    const { x, y } = this.screenPosition
+    const xOffsetName = this.nameElement.clientWidth / 2
+    const yOffsetName = 80
+
+    const xOffsetButton = this.challengeButton.clientWidth / 2
+    this.nameElement.style.transform = `translateX(${
+      x - xOffsetName
+    }px) translateY(${y - yOffsetName}px)`
+    this.challengeButton.style.transform = `translateX(${
+      x - xOffsetButton
+    }px) translateY(${y}px)`
   }
 
   update() {
-    this.setNamePosition()
+    this.updateElementsPosition()
   }
 
   updateName(name: string) {
     this.nameElement.innerText = name
+  }
+
+  showChallengeButton() {
+    this.challengeButton.style.display = 'block'
+    setTimeout(() => {
+      this.hideChallengeButton()
+    }, 10000)
+  }
+
+  private hideChallengeButton() {
+    this.challengeButton.style.display = 'none'
+  }
+
+  private get isInView() {
+    let camera = this.engine.camera.instance
+    const matrix = new THREE.Matrix4().multiplyMatrices(
+      camera.projectionMatrix,
+      camera.matrixWorldInverse
+    )
+    frustum.setFromProjectionMatrix(matrix)
+
+    return frustum.containsPoint(this.position)
   }
 }
