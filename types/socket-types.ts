@@ -1,4 +1,4 @@
-import { Player } from './player-types'
+import { Player, Vec3 } from './player-types'
 import { Server, Socket } from 'socket.io'
 import { Socket as ClientSocket } from 'socket.io-client'
 
@@ -8,6 +8,7 @@ export type EndState = Record<string, GameOverReason>
 
 export type ServerToClientEvents = {
   updatePlayers: (players: Record<string, Player>) => void
+  setPosition: (position: Vec3) => void
   challenge: (attacker: string) => void
   startGame: (param: { attacker: string; defender: string }) => void
   initGrid: (grid: number[][]) => void
@@ -29,6 +30,7 @@ export type ClientToServerEvents = {
   forfeit: () => void
   fire: (x: number, y: number) => void
   move: (position: { x: number; y: number; z: number }) => void
+  rotation: (quaternion: { x: number; y: number; z: number; w: number }) => void
 }
 
 export type TypedServer = Server<ClientToServerEvents, ServerToClientEvents>

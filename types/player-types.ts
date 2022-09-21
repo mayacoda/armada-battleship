@@ -3,6 +3,7 @@ export type Player = {
   name: string
   isPlaying: boolean
   position: Vec3
+  rotation: { x: number; y: number; z: number; w: number } | null
 }
 
 export type Vec3 = {

@@ -1,15 +1,12 @@
 import { Engine } from './Engine'
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { GameEntity } from './GameEntity'
 
 export class Camera implements GameEntity {
   public instance!: THREE.PerspectiveCamera
-  private controls!: OrbitControls
 
   constructor(private engine: Engine) {
     this.initCamera()
-    // this.initControls()
   }
 
   private initCamera() {
@@ -17,24 +14,14 @@ export class Camera implements GameEntity {
       50,
       this.engine.sizes.width / this.engine.sizes.height,
       0.1,
-      1000
+      100
     )
-    this.instance.position.z = 5
-    this.instance.position.y = 2
-    this.engine.scene.add(this.instance)
   }
-
-  // private initControls() {
-  //   this.controls = new OrbitControls(this.instance, this.engine.canvas)
-  //   this.controls.update()
-  // }
 
   resize() {
     this.instance.aspect = this.engine.sizes.aspectRatio
     this.instance.updateProjectionMatrix()
   }
 
-  update() {
-    this.controls?.update()
-  }
+  update() {}
 }

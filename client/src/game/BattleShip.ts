@@ -5,11 +5,11 @@ import { UIManager } from './UIManager'
 import { ClientGameState } from './ClientGameState'
 import * as THREE from 'three'
 import { Boat } from './Boat'
-import { Globe } from './Globe'
 import { Engine } from '../engine/Engine'
 import { Player } from '../../../types/player-types'
 import { tryCatch } from './html/helpers'
 import { PlayerBoat } from './PlayerBoat'
+import { Water } from './Water'
 
 export class BattleShip implements Experience {
   resources = []
@@ -20,7 +20,7 @@ export class BattleShip implements Experience {
   otherPlayers: Record<string, THREE.Object3D> = {}
 
   currentPlayer!: PlayerBoat
-  globe!: Globe
+  water!: Water
 
   ready: boolean = false
 
@@ -37,7 +37,7 @@ export class BattleShip implements Experience {
     this.gameState.on('updatePlayers', () => {
       if (this.gameState.scene === 'idle') {
         tryCatch(() => {
-          this.updateGlobe()
+          this.updateWater()
         })
       }
     })
@@ -47,9 +47,6 @@ export class BattleShip implements Experience {
 
   update() {
     if (!this.ready) return
-    for (const player of Object.values(this.otherPlayers)) {
-      player.lookAt(this.globe.position)
-    }
 
     this.currentPlayer.update()
   }
@@ -62,12 +59,12 @@ export class BattleShip implements Experience {
       this.engine,
       this.gameState
     )
-    this.globe = new Globe()
+    this.water = new Water()
 
-    let scale = this.gameState.globeScale
-    this.globe.scale.setScalar(scale)
+    let scale = this.gameState.waterScale
+    this.water.scale.setScalar(scale)
 
-    this.engine.scene.add(this.globe)
+    this.engine.scene.add(this.water)
     this.engine.scene.add(this.currentPlayer)
 
     this.currentPlayer.update()
@@ -75,10 +72,10 @@ export class BattleShip implements Experience {
     this.ready = true
   }
 
-  private updateGlobe() {
+  private updateWater() {
     // update the globe's size based on how many players there are
-    let scale = this.gameState.globeScale
-    this.globe.scale.setScalar(scale)
+    let scale = this.gameState.waterScale
+    this.water.scale.setScalar(scale)
 
     // update the boats to show the players
     // and their positions
@@ -104,8 +101,15 @@ export class BattleShip implements Experience {
   }
 
   private positionPlayer(player: Player) {
-    let scale = this.gameState.globeScale
-    const { x, y, z } = player.position
-    this.otherPlayers[player.id]?.position.set(x * scale, y * scale, z * scale)
+    let scale = this.gameState.waterScale
+    const { x, z } = player.position
+
+    let otherPlayer = this.otherPlayers[player.id]
+    otherPlayer?.position.set(x * scale, 0, z * scale)
+    if (player.rotation) {
+      otherPlayer?.rotation.setFromQuaternion(
+        player.rotation as THREE.Quaternion
+      )
+    }
   }
 }

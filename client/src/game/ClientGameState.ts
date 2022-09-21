@@ -52,11 +52,11 @@ export class ClientGameState extends EventEmitter {
     return this.currentScene
   }
 
-  get globeScale() {
+  get waterScale() {
     return 4 + Math.sqrt(Object.keys(this.players).length)
   }
 
-  get currentPlayer() {
+  get currentPlayer(): Player | undefined {
     return this.players[this.id]
   }
 }

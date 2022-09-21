@@ -17,12 +17,16 @@ export class PlayerManager {
       this.removePlayer(socket.id)
     })
     socket.on('login', (name) => {
+      let position = randomVec3()
       this.addPlayer({
         id: socket.id,
         name: name,
         isPlaying: false,
-        position: randomVec3(),
+        position,
+        rotation: null,
       })
+
+      socket.emit('setPosition', position)
     })
     socket.on('challenge', (playerId) => {
       this.challengePlayer(socket.id, playerId)
@@ -34,6 +38,13 @@ export class PlayerManager {
       const player = this.players[socket.id]
       if (player) {
         player.position = position
+        this.io.emit('updatePlayers', this.players)
+      }
+    })
+    socket.on('rotation', (quaternion) => {
+      const player = this.players[socket.id]
+      if (player) {
+        player.rotation = quaternion
         this.io.emit('updatePlayers', this.players)
       }
     })
