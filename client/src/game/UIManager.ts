@@ -88,7 +88,8 @@ export class UIManager {
         challengeButton.innerText = 'Playing'
       } else {
         challengeButton.innerText = 'Challenge'
-        challengeButton.addEventListener('click', () => {
+        challengeButton.addEventListener('click', (event) => {
+          event.stopPropagation()
           this.engine.socket.emit('challenge', player.id)
         })
       }
@@ -145,7 +146,8 @@ export class UIManager {
       '#accept'
     ) as HTMLButtonElement
 
-    acceptButton.addEventListener('click', () => {
+    acceptButton.addEventListener('click', (event) => {
+      event.stopPropagation()
       this.engine.socket.emit('accept', attacker)
       this.cleanUpGame()
       challengeElement.remove()
@@ -154,13 +156,15 @@ export class UIManager {
     const rejectButton = challengeElement.querySelector(
       '#reject'
     ) as HTMLButtonElement
-    rejectButton.addEventListener('click', () => {
+    rejectButton.addEventListener('click', (event) => {
+      event.stopPropagation()
       challengeElement.remove()
     })
   }
 
   showGameOverModal(reason: 'win' | 'lose' | 'disconnect' | 'forfeit') {
-    const overlay = createGameOverOverlay(reason, () => {
+    const overlay = createGameOverOverlay(reason, (e: Event) => {
+      e.stopPropagation()
       this.cleanUpGame()
       this.updatePlayerList(this.gameState.players, this.engine.socket.id)
     })

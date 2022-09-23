@@ -44,20 +44,44 @@ export class BattleShip implements Experience {
       }
     })
 
-    this.initializeScene()
+    this.gameState.on('sceneChanged', () => {
+      if (this.gameState.scene === 'idle') {
+        tryCatch(() => {
+          this.endGame()
+        })
+      } else if (this.gameState.scene === 'playing') {
+        tryCatch(() => {
+          this.startGame()
+        })
+      }
+    })
+
+    this.startLoginScene()
   }
 
   update() {
     if (!this.ready) return
 
-    Object.values(this.otherPlayers).forEach((boat) => boat.update())
-
-    this.currentPlayer.update()
+    if (this.gameState.scene === 'idle') {
+      Object.values(this.otherPlayers).forEach((boat) => boat.update())
+      this.currentPlayer.update()
+    }
   }
 
   resize() {}
 
-  private initializeScene() {
+  private startGame() {
+    this.cleanUpIdleScene()
+    this.startPlayingScene()
+  }
+
+  private endGame() {
+    this.cleanUpPlayingScene()
+    this.startIdleScene()
+    this.updateWater()
+  }
+
+  private startLoginScene() {
     this.currentPlayer = new PlayerBoat(
       this.socket,
       this.engine,
@@ -75,6 +99,30 @@ export class BattleShip implements Experience {
 
     this.ready = true
   }
+
+  private startIdleScene() {
+    this.currentPlayer.reboot()
+    this.engine.scene.add(this.currentPlayer)
+    this.engine.scene.add(this.water)
+  }
+
+  private cleanUpIdleScene() {
+    Object.values(this.otherPlayers).forEach((boat) => {
+      this.engine.scene.remove(boat)
+      boat.cleanup()
+    })
+
+    this.engine.scene.remove(this.currentPlayer)
+    this.currentPlayer.cleanup()
+
+    this.engine.scene.remove(this.water)
+
+    this.otherPlayers = {}
+  }
+
+  private cleanUpPlayingScene() {}
+
+  private startPlayingScene() {}
 
   private updateWater() {
     // update the globe's size based on how many players there are

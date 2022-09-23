@@ -52,11 +52,13 @@ export class GameUIManager {
     playersList?.remove()
 
     const fireCallback = (e: Event) => {
+      e.stopPropagation()
       this.fireAtEnemy(e)
     }
 
     let alreadyForfeited = false
-    const forfeitCallback = () => {
+    const forfeitCallback = (e: Event) => {
+      e.stopPropagation()
       if (!alreadyForfeited) {
         // forfeit the game
         alreadyForfeited = true

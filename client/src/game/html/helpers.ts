@@ -38,7 +38,7 @@ export function markResult(
 
 export function createGameOverOverlay(
   reason: 'win' | 'lose' | 'disconnect' | 'forfeit',
-  listener: () => void
+  listener: (e: Event) => void
 ) {
   // create overlay to prevent user from clicking on anything else
   const overlay = document.createElement('div')
@@ -86,7 +86,7 @@ export function createGameOverOverlay(
 
 export function createGameUI(
   opponent: Player,
-  forfeitCallback: () => void,
+  forfeitCallback: (e: Event) => void,
   fireCallback: (e: Event) => void
 ) {
   const gameContainer = document.createElement('div')

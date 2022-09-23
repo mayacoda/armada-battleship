@@ -55,7 +55,6 @@ export class PlayerBoat extends Boat {
     if (event.length > 0) {
       let hit = event[0]
       if (hit.object.name === 'water') {
-        console.log('hit the water')
         this.lookAtPoint = this.smoothLookAt(hit.point)
         this.targetPosition = hit.point
       } else if (
@@ -63,10 +62,7 @@ export class PlayerBoat extends Boat {
         hit.object instanceof Boat &&
         !hit.object.userData.isPlayer
       ) {
-        console.log(hit.object.userData.id, this.gameState.currentPlayer?.id)
-        console.log('hit a boat')
         hit.object.showChallengeButton()
-        // show the boat's menu
       }
     }
   }
@@ -112,5 +108,16 @@ export class PlayerBoat extends Boat {
     mock.parent!.remove(mock)
 
     return targetQuaternion
+  }
+
+  cleanup() {
+    this.remove(this.engine.camera.instance)
+    super.cleanup()
+  }
+
+  reboot() {
+    this.add(this.engine.camera.instance)
+    this.engine.ui.container.appendChild(this.nameElement)
+    this.engine.ui.container.appendChild(this.challengeButton)
   }
 }
