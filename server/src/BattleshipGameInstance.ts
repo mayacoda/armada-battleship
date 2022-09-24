@@ -30,6 +30,8 @@ export class BattleshipGameInstance extends EventEmitter {
   player2: BattleshipPlayer
   io: TypedServer
 
+  currentTurn: string
+
   disconnectOffHandlers: Listener[] = []
 
   constructor(attacker: Player, defender: Player, io: TypedServer) {
@@ -67,6 +69,7 @@ export class BattleshipGameInstance extends EventEmitter {
     player2Socket.emit('initShips', this.player2.ships)
 
     player1Socket.emit('yourTurn')
+    this.currentTurn = player1Socket.id
 
     this.handleFireEvents(player1Socket, player2Socket)
     this.handleForfeitEvents(player1Socket, player2Socket)
@@ -76,12 +79,19 @@ export class BattleshipGameInstance extends EventEmitter {
   private handleFireEvents(...sockets: TypedSocket[]) {
     for (const socket of sockets) {
       socket.on('fire', (x: number, y: number) => {
+        if (this.currentTurn !== socket.id) return // not your turn
+
         this.fire({
           receiving: this.findEnemy(socket.id),
           firing: this.findPlayer(socket.id),
           x,
           y,
         })
+        // switch turns
+        this.currentTurn =
+          this.currentTurn === this.player1.id
+            ? this.player2.id
+            : this.player1.id
         socket.emit('endTurn')
         socket.to(this.gameId).emit('yourTurn')
       })

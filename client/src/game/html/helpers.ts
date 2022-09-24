@@ -1,40 +1,4 @@
-import { GRID_SIZE } from '../../../../constants/constants'
 import { Player } from '../../../../types/player-types'
-
-export function createTable() {
-  const table = document.createElement('table')
-  table.style.border = '1px solid black'
-  table.style.margin = '15px'
-  table.style.borderCollapse = 'collapse'
-  for (let i = 0; i < GRID_SIZE; i++) {
-    const tr = document.createElement('tr')
-    for (let j = 0; j < GRID_SIZE; j++) {
-      const td = document.createElement('td')
-      td.style.border = '1px solid black'
-      td.style.width = '48px'
-      td.style.height = '48px'
-      td.style.textAlign = 'center'
-      td.style.verticalAlign = 'middle'
-      tr.appendChild(td)
-    }
-    table.appendChild(tr)
-  }
-  return table
-}
-
-export function markResult(
-  table: HTMLTableElement,
-  x: number,
-  y: number,
-  hit: boolean
-) {
-  const cell = table.rows[x].cells[y]
-  if (hit) {
-    cell.style.backgroundColor = '#f00'
-  } else {
-    cell.style.backgroundColor = '#bbb'
-  }
-}
 
 export function createGameOverOverlay(
   reason: 'win' | 'lose' | 'disconnect' | 'forfeit',
@@ -86,8 +50,7 @@ export function createGameOverOverlay(
 
 export function createGameUI(
   opponent: Player,
-  forfeitCallback: (e: Event) => void,
-  fireCallback: (e: Event) => void
+  forfeitCallback: (e: Event) => void
 ) {
   const gameContainer = document.createElement('div')
   gameContainer.style.padding = '1rem'
@@ -102,39 +65,21 @@ export function createGameUI(
   gameContainer.appendChild(opponentNameElement)
 
   // show forfeit game button
-  const cancelButton = document.createElement('button')
-  cancelButton.innerText = 'Forfeit Game'
-  cancelButton.addEventListener('click', forfeitCallback)
+  const forfeitButton = document.createElement('button')
+  forfeitButton.innerText = 'Forfeit Game'
+  forfeitButton.addEventListener('click', forfeitCallback)
 
-  gameContainer.appendChild(cancelButton)
+  gameContainer.appendChild(forfeitButton)
 
-  // show screen for battleship game
-  const battleshipGame = document.createElement('div')
-  battleshipGame.id = 'battleship-game'
+  const yourTurnBadge = document.createElement('span')
+  yourTurnBadge.id = 'your-turn'
+  yourTurnBadge.innerText = 'Your Turn'
+  yourTurnBadge.style.display = 'none'
+  yourTurnBadge.style.backgroundColor = 'green'
+  yourTurnBadge.style.color = '#fff'
 
-  // add title "Enemy Ships"
-  const enemyTitle = document.createElement('h3')
-  enemyTitle.innerText = 'Enemy Ships'
-  battleshipGame.appendChild(enemyTitle)
+  gameContainer.appendChild(yourTurnBadge)
 
-  // create a 6 x 6 table for battleship for enemy ships
-  const enemyTable = createTable()
-  enemyTable.id = 'enemy-table'
-
-  enemyTable.addEventListener('click', fireCallback)
-  battleshipGame.appendChild(enemyTable)
-
-  // add title "Your Ships"
-  const yourTitle = document.createElement('h3')
-  yourTitle.innerText = 'Your Ships'
-  battleshipGame.appendChild(yourTitle)
-
-  // create a 6 x 6 table for battleship for player ships
-  const playerTable = createTable()
-  playerTable.id = 'player-table'
-  battleshipGame.appendChild(playerTable)
-
-  gameContainer.appendChild(battleshipGame)
   return gameContainer
 }
 

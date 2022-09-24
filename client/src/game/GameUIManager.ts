@@ -1,7 +1,7 @@
 import { TypedClient } from '../../../types/socket-types'
 import { Player } from '../../../types/player-types'
 import { ClientGameState } from './ClientGameState'
-import { createGameUI, markResult } from './html/helpers'
+import { createGameUI, tryCatch } from './html/helpers'
 
 export class GameUIManager {
   uiLayer: HTMLDivElement
@@ -18,31 +18,13 @@ export class GameUIManager {
     this.gameState = gameState
 
     this.gameState.on('turnChanged', () => {
-      if (this.gameState.isYourTurn) {
-        this.showYourTurn()
-      } else {
-        this.hideYourTurn()
-      }
-    })
-
-    this.socket.on('initGrid', (grid: number[][]) => {
-      this.initGrid(grid)
-    })
-
-    this.socket.on('result', ({ x, y, hit, firedBy }) => {
-      if (this.gameState.id === firedBy) {
-        // show the result in the enemies table
-        const enemyTable = document.querySelector(
-          '#enemy-table'
-        ) as HTMLTableElement
-        markResult(enemyTable, x, y, hit)
-      } else {
-        // show the result in the players table
-        const playerTable = document.querySelector(
-          '#player-table'
-        ) as HTMLTableElement
-        markResult(playerTable, x, y, hit)
-      }
+      tryCatch(() => {
+        if (this.gameState.isYourTurn) {
+          this.showYourTurn()
+        } else {
+          this.hideYourTurn()
+        }
+      })
     })
   }
 
@@ -50,11 +32,6 @@ export class GameUIManager {
     // hide the players list
     const playersList = document.querySelector('#players') as HTMLUListElement
     playersList?.remove()
-
-    const fireCallback = (e: Event) => {
-      e.stopPropagation()
-      this.fireAtEnemy(e)
-    }
 
     let alreadyForfeited = false
     const forfeitCallback = (e: Event) => {
@@ -66,24 +43,8 @@ export class GameUIManager {
       }
     }
 
-    const gameContainer = createGameUI(opponent, forfeitCallback, fireCallback)
+    const gameContainer = createGameUI(opponent, forfeitCallback)
     this.uiLayer.appendChild(gameContainer)
-  }
-
-  initGrid(grid: number[][]) {
-    const playerTable = document.querySelector(
-      '#player-table'
-    ) as HTMLTableElement
-    // mark player table with ships
-    grid.forEach((row, rowIndex) => {
-      row.forEach((cell, cellIndex) => {
-        if (cell !== 0) {
-          const cellElement = playerTable.rows[rowIndex].cells[cellIndex]
-          cellElement.classList.add('ship')
-          cellElement.innerText = cell.toString()
-        }
-      })
-    })
   }
 
   destroyGameUI() {
@@ -91,28 +52,17 @@ export class GameUIManager {
     gameContainer?.remove()
   }
 
-  fireAtEnemy(e: Event) {
-    if (e.target instanceof HTMLTableCellElement) {
-      let parentElement = e.target.parentElement as HTMLTableRowElement
-      const x = parentElement?.rowIndex ?? 0
-      const y = e.target.cellIndex
-      if (this.gameState.isYourTurn && x !== undefined && y !== undefined) {
-        this.socket.emit('fire', x, y)
-      }
+  showYourTurn() {
+    const yourTurnBadge = document.querySelector('#your-turn')
+    if (yourTurnBadge instanceof HTMLElement) {
+      yourTurnBadge.style.display = 'block'
     }
   }
 
-  showYourTurn() {
-    const enemyTable = document.querySelector(
-      '#enemy-table'
-    ) as HTMLTableElement
-    enemyTable.style.border = '2px solid #f00'
-  }
-
   hideYourTurn() {
-    const enemyTable = document.querySelector(
-      '#enemy-table'
-    ) as HTMLTableElement
-    enemyTable.style.border = '1px solid #000'
+    const yourTurnBadge = document.querySelector('#your-turn')
+    if (yourTurnBadge instanceof HTMLElement) {
+      yourTurnBadge.style.display = 'none'
+    }
   }
 }
