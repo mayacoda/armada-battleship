@@ -1,2 +1,13 @@
 export const GRID_SIZE = 6
-export const TOTAL_SHIPS = 4 + 3 + 2 + 1
+export enum SHIP_TYPE {
+  CARRIER = 4,
+  BATTLESHIP = 3,
+  CRUISER = 2,
+  SUBMARINE = 1,
+}
+
+export const TOTAL_SHIPS =
+  SHIP_TYPE.CARRIER +
+  SHIP_TYPE.BATTLESHIP +
+  SHIP_TYPE.CRUISER +
+  SHIP_TYPE.SUBMARINE

@@ -13,8 +13,8 @@ export class RenderEngine implements GameEntity {
     })
 
     this.renderer.physicallyCorrectLights = true
-    this.renderer.outputEncoding = THREE.sRGBEncoding
-    this.renderer.toneMapping = THREE.CineonToneMapping
+    // this.renderer.outputEncoding = THREE.sRGBEncoding
+    // this.renderer.toneMapping = THREE.CineonToneMapping
     this.renderer.toneMappingExposure = 1.75
     this.renderer.shadowMap.enabled = true
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap

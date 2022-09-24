@@ -1,11 +1,17 @@
 import { Player } from '../../types/player-types'
-import { EndState, TypedServer, TypedSocket } from '../../types/socket-types'
+import {
+  EndState,
+  Ship,
+  TypedServer,
+  TypedSocket,
+} from '../../types/socket-types'
 import { EventEmitter } from 'events'
-import { GRID_SIZE, TOTAL_SHIPS } from '../../constants/constants.js'
+import { GRID_SIZE, SHIP_TYPE, TOTAL_SHIPS } from '../../constants/constants.js'
 import { placeShip } from './game-logic.js'
 
 type BattleshipPlayer = Player & {
   grid: number[][]
+  ships: Ship[]
   shipsSunk: number
 }
 
@@ -30,8 +36,8 @@ export class BattleshipGameInstance extends EventEmitter {
     super()
     this.io = io
 
-    this.player1 = { ...attacker, shipsSunk: 0, grid: [] }
-    this.player2 = { ...defender, shipsSunk: 0, grid: [] }
+    this.player1 = { ...attacker, shipsSunk: 0, grid: [], ships: [] }
+    this.player2 = { ...defender, shipsSunk: 0, grid: [], ships: [] }
 
     this.gameId = `${attacker.id}-${defender.id}`
 
@@ -56,6 +62,9 @@ export class BattleshipGameInstance extends EventEmitter {
     // the enemy's grid should be sanitized
     player1Socket.emit('initGrid', this.player1.grid)
     player2Socket.emit('initGrid', this.player2.grid)
+
+    player1Socket.emit('initShips', this.player1.ships)
+    player2Socket.emit('initShips', this.player2.ships)
 
     player1Socket.emit('yourTurn')
 
@@ -121,15 +130,15 @@ export class BattleshipGameInstance extends EventEmitter {
     }
 
     // set up ships randomly for each player
-    placeShip(this.player1.grid, 4)
-    placeShip(this.player1.grid, 3)
-    placeShip(this.player1.grid, 2)
-    placeShip(this.player1.grid, 1)
+    this.player1.ships.push(placeShip(this.player1.grid, SHIP_TYPE.CARRIER))
+    this.player1.ships.push(placeShip(this.player1.grid, SHIP_TYPE.BATTLESHIP))
+    this.player1.ships.push(placeShip(this.player1.grid, SHIP_TYPE.CRUISER))
+    this.player1.ships.push(placeShip(this.player1.grid, SHIP_TYPE.SUBMARINE))
 
-    placeShip(this.player2.grid, 4)
-    placeShip(this.player2.grid, 3)
-    placeShip(this.player2.grid, 2)
-    placeShip(this.player2.grid, 1)
+    this.player2.ships.push(placeShip(this.player2.grid, SHIP_TYPE.CARRIER))
+    this.player2.ships.push(placeShip(this.player2.grid, SHIP_TYPE.BATTLESHIP))
+    this.player2.ships.push(placeShip(this.player2.grid, SHIP_TYPE.CRUISER))
+    this.player2.ships.push(placeShip(this.player2.grid, SHIP_TYPE.SUBMARINE))
   }
 
   fire({ receiving, firing, x, y }: FireParams) {

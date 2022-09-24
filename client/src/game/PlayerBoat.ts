@@ -17,11 +17,7 @@ export class PlayerBoat extends Boat {
   ) {
     super(engine)
     this.material.color.set('#bb4a0d')
-
-    this.engine.camera.instance.position.set(0, 4, -5)
-    this.add(this.engine.camera.instance)
-
-    this.engine.camera.instance.lookAt(this.position)
+    this.positionCamera()
 
     const clickListener = (event: THREE.Intersection[]) => {
       this.listenForClick(event)
@@ -49,6 +45,13 @@ export class PlayerBoat extends Boat {
   update() {
     this.updatePlayerPosition()
     super.update()
+  }
+
+  private positionCamera() {
+    this.engine.camera.instance.position.set(0, 4, -5)
+    this.add(this.engine.camera.instance)
+
+    this.engine.camera.instance.lookAt(this.position)
   }
 
   private listenForClick(event: THREE.Intersection[]) {
@@ -110,13 +113,13 @@ export class PlayerBoat extends Boat {
     return targetQuaternion
   }
 
-  cleanup() {
+  cleanUp() {
     this.remove(this.engine.camera.instance)
-    super.cleanup()
+    super.cleanUp()
   }
 
   reboot() {
-    this.add(this.engine.camera.instance)
+    this.positionCamera()
     this.engine.ui.container.appendChild(this.nameElement)
     this.engine.ui.container.appendChild(this.challengeButton)
   }

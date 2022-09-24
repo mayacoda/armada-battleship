@@ -10,6 +10,7 @@ import { Player } from '../../../types/player-types'
 import { tryCatch } from './html/helpers'
 import { PlayerBoat } from './PlayerBoat'
 import { Water } from './Water'
+import { GameBoard } from './GameBoard'
 
 export class BattleShip implements Experience {
   resources = []
@@ -21,6 +22,8 @@ export class BattleShip implements Experience {
 
   currentPlayer!: PlayerBoat
   water!: Water
+
+  gameBoard!: GameBoard
 
   ready: boolean = false
 
@@ -88,6 +91,7 @@ export class BattleShip implements Experience {
       this.gameState
     )
     this.water = new Water()
+    this.gameBoard = new GameBoard(this.engine)
 
     let scale = this.gameState.waterScale
     this.water.scale.setScalar(scale)
@@ -109,20 +113,30 @@ export class BattleShip implements Experience {
   private cleanUpIdleScene() {
     Object.values(this.otherPlayers).forEach((boat) => {
       this.engine.scene.remove(boat)
-      boat.cleanup()
+      boat.cleanUp()
     })
 
     this.engine.scene.remove(this.currentPlayer)
-    this.currentPlayer.cleanup()
+    this.currentPlayer.cleanUp()
 
     this.engine.scene.remove(this.water)
 
     this.otherPlayers = {}
   }
 
-  private cleanUpPlayingScene() {}
+  private startPlayingScene() {
+    this.engine.scene.add(this.engine.camera.instance)
+    this.engine.camera.instance.position.set(0, 0, 10)
+    this.engine.camera.instance.lookAt(0, 0, 0)
 
-  private startPlayingScene() {}
+    this.engine.scene.add(this.gameBoard)
+  }
+
+  private cleanUpPlayingScene() {
+    this.gameBoard.cleanUp()
+    this.engine.scene.remove(this.engine.camera.instance)
+    this.engine.scene.remove(this.gameBoard)
+  }
 
   private updateWater() {
     // update the globe's size based on how many players there are

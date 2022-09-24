@@ -96,7 +96,7 @@ export class Boat extends THREE.Mesh {
     return frustum.containsPoint(this.position)
   }
 
-  cleanup() {
+  cleanUp() {
     this.engine.ui.container.removeChild(this.nameElement)
     this.engine.ui.container.removeChild(this.challengeButton)
   }
