@@ -4,11 +4,6 @@
 }
 
 @font-face {
-  font-family: 'Titan One';
-  src: url('assets/fonts/TitanOne-Regular.ttf') format('truetype');
-}
-
-@font-face {
   font-family: 'Open Sans';
   src: url('assets/fonts/OpenSans-Regular.ttf') format('truetype');
 }
@@ -27,6 +22,8 @@ body,
   --border-radius: 0.3em;
   --basic-color: #dadada;
   --box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
+  --dark-color: #333;
+  --light-color: #fff;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -73,10 +70,18 @@ h6 {
 }
 
 .boat-name,
-.challenge-button {
+.challenge-button,
+.canvas-positioned {
   position: absolute;
   top: 50%;
   left: 50%;
+}
+
+.boat-name {
+  background: var(--dark-color);
+  color: var(--light-color);
+  border-radius: 50px;
+  padding: 0.5em 1em;
 }
 
 .toast {
@@ -192,4 +197,20 @@ input {
   outline: none;
   border: 0;
   box-shadow: var(--box-shadow);
+}
+
+#game-container {
+  padding: 1em;
+
+  h2 {
+    margin-top: 0;
+  }
+
+  button {
+    background: var(--primary-color);
+    color: var(--light-color);
+    position: fixed;
+    top: 1em;
+    right: 1em;
+  }
 }

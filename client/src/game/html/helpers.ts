@@ -12,16 +12,16 @@ export function createGameOverOverlay(
   let text = ''
   switch (reason) {
     case 'win':
-      text = 'You won! ✨'
+      text = 'You won! <span class="emoji">✨</span>'
       break
     case 'lose':
-      text = 'You lost! 😢'
+      text = 'You lost! <span class="emoji">😢</span>'
       break
     case 'forfeit':
-      text = 'You forfeited! 😱'
+      text = 'You forfeited! <span class="emoji">😱</span>'
       break
     case 'disconnect':
-      text = 'Your opponent disconnected! 💔'
+      text = 'Your opponent disconnected! <span class="emoji">💔</span>'
       break
   }
 
@@ -60,19 +60,10 @@ export function createGameUI(
 
   // show forfeit game button
   const forfeitButton = document.createElement('button')
-  forfeitButton.innerText = 'Forfeit Game'
+  forfeitButton.innerHTML = '<span class="emoji">🏳</span> Forfeit'
   forfeitButton.addEventListener('click', forfeitCallback)
 
   gameContainer.appendChild(forfeitButton)
-
-  const yourTurnBadge = document.createElement('span')
-  yourTurnBadge.id = 'your-turn'
-  yourTurnBadge.innerText = 'Your Turn'
-  yourTurnBadge.style.display = 'none'
-  yourTurnBadge.style.backgroundColor = 'green'
-  yourTurnBadge.style.color = '#fff'
-
-  gameContainer.appendChild(yourTurnBadge)
 
   return gameContainer
 }

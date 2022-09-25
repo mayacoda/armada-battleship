@@ -3,11 +3,13 @@ import { GridHelper, Intersection, Object3D } from 'three'
 import { GRID_SIZE, SHIP_TYPE } from '../../../constants/constants'
 import { Engine } from '../engine/Engine'
 import { Ship } from '../../../types/socket-types'
+import { tryCatch } from './html/helpers'
 
 export class GameBoard extends Object3D {
   name = 'gameBoard'
   playerGrid!: GridHelper
   enemyGrid!: GridHelper
+  enemyGridBackdrop!: THREE.Mesh
   gridWidth = 3.5
   squareWidth = this.gridWidth / GRID_SIZE
 
@@ -41,6 +43,18 @@ export class GameBoard extends Object3D {
         this.markResult(this.playerGrid, x, y, hit)
       }
     })
+
+    this.engine.socket.on('yourTurn', () => {
+      tryCatch(() => {
+        this.enemyGridBackdrop.visible = true
+      })
+    })
+
+    this.engine.socket.on('endTurn', () => {
+      tryCatch(() => {
+        this.enemyGridBackdrop.visible = false
+      })
+    })
   }
 
   private createWater() {
@@ -65,6 +79,17 @@ export class GameBoard extends Object3D {
     enemyGrid.rotation.x = Math.PI / 2
     this.enemyGrid = enemyGrid
 
+    this.enemyGridBackdrop = new THREE.Mesh(
+      new THREE.PlaneGeometry(this.gridWidth, this.gridWidth),
+      new THREE.MeshBasicMaterial({
+        color: '#f00',
+      })
+    )
+    this.enemyGridBackdrop.position.copy(enemyGrid.position)
+    this.enemyGridBackdrop.position.z = 0.005
+    this.enemyGridBackdrop.visible = false
+
+    this.add(this.enemyGridBackdrop)
     this.add(enemyGrid)
 
     const playerGrid = new THREE.GridHelper(
@@ -78,7 +103,6 @@ export class GameBoard extends Object3D {
     playerGrid.rotation.x = Math.PI / 2
 
     this.playerGrid = playerGrid
-    console.log(this.playerGrid.position)
 
     this.add(playerGrid)
   }
