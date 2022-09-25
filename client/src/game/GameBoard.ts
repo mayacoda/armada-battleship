@@ -16,10 +16,8 @@ export class GameBoard extends Object3D {
 
     this.createWater()
     this.createGrids()
-    console.log('created game scene mesh')
 
     this.engine.socket.on('initShips', (ships) => {
-      console.log(ships)
       this.populateGrid(ships)
     })
 

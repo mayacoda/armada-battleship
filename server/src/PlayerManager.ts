@@ -67,6 +67,9 @@ export class PlayerManager {
   startGame(attacker: string, defender: string) {
     const player1 = this.players[attacker]
     const player2 = this.players[defender]
+    if (!player1) return console.error(`Attacker ${attacker} not found`)
+    if (!player2) return console.error(`Defender ${defender} not found`)
+
     player1.isPlaying = true
     player2.isPlaying = true
     this.io.emit('updatePlayers', this.players)

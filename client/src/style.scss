@@ -1,6 +1,24 @@
+@font-face {
+  font-family: 'Noto Color Emoji';
+  src: url('assets/fonts/NotoColorEmoji.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Titan One';
+  src: url('assets/fonts/TitanOne-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Open Sans';
+  src: url('assets/fonts/OpenSans-Regular.ttf') format('truetype');
+}
+
 html,
 body,
 #canvas {
+  --primary-color: #1ca1ce;
+  --primary-color-dark: #0e5a6e;
+  --border-radius: 0.3em;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -19,12 +37,18 @@ body,
 }
 
 #ui {
+  font-family: 'Open Sans', sans-serif !important;
   position: absolute;
   top: 0;
   margin: 0 auto;
   height: 100vh;
   width: 100%;
   pointer-events: none !important;
+}
+
+.emoji {
+  font-family: 'Noto Color Emoji', sans-serif !important;
+  font-size: 1.5em;
 }
 
 #ui > * {
@@ -36,4 +60,55 @@ body,
   position: absolute;
   top: 50%;
   left: 50%;
+}
+
+.toast {
+  padding: 1em 1em 2em;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #fff;
+  text-align: center;
+  box-sizing: border-box;
+  transition: transform 0.4s ease;
+  transition-delay: 0.1s;
+  transform: translateY(100%);
+
+  &.visible {
+    transform: translateY(0);
+  }
+
+  box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
+}
+
+button,
+input[type='button'],
+input[type='submit'] {
+  font-family: 'Open Sans', sans-serif !important;
+  font-weight: 600;
+  border: 0;
+  border-radius: var(--border-radius);
+  padding: 0.75em 1.5em;
+  cursor: pointer;
+  outline: none;
+
+  &.primary {
+    background: var(--primary-color);
+    color: #fff;
+
+    &:hover &:focus {
+      background: var(--primary-color-dark);
+    }
+  }
+}
+
+input {
+  font-family: 'Open Sans', sans-serif !important;
+  border: 0;
+  border-radius: var(--border-radius);
+  padding: 0.75em 1.5em;
+  cursor: pointer;
+  outline: none;
+  background: #fff;
 }

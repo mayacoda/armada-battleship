@@ -1,4 +1,3 @@
-import { Player } from '../../../types/player-types'
 import { EndState } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
@@ -8,7 +7,6 @@ import { Engine } from '../engine/Engine'
 export class UIManager {
   uiLayer: HTMLDivElement
   gameUIManager: GameUIManager | null = null
-  players: Record<string, Player> = {}
 
   constructor(private engine: Engine, private gameState: ClientGameState) {
     this.uiLayer = this.engine.ui.container
@@ -17,10 +15,6 @@ export class UIManager {
 
   async init() {
     const userName = await this.showLogin()
-
-    this.gameState.on('updatePlayers', (players: Record<string, Player>) => {
-      this.updatePlayerList(players, this.engine.socket.id)
-    })
 
     this.engine.socket.on('challenge', (attackerId: string) => {
       this.showChallenge(attackerId)
@@ -67,54 +61,13 @@ export class UIManager {
     })
   }
 
-  // Players List
-  updatePlayerList(players: Record<string, Player>, currentPlayerId: string) {
-    if (this.gameState.scene !== 'idle') return
-    const playersListElement = this.getPlayerListElement()
-    playersListElement.style.maxWidth = '100%'
-
-    playersListElement.innerHTML = ''
-    Object.values(players).forEach((player) => {
-      const li = document.createElement('li')
-      li.innerText = `${player.name} - ${player.id}`
-      li.style.padding = '0.5rem'
-      const challengeButton = document.createElement('button')
-      challengeButton.style.marginLeft = '1rem'
-      if (player.id === currentPlayerId) {
-        challengeButton.disabled = true
-        challengeButton.innerText = 'You'
-      } else if (player.isPlaying) {
-        challengeButton.disabled = true
-        challengeButton.innerText = 'Playing'
-      } else {
-        challengeButton.innerText = 'Challenge'
-        challengeButton.addEventListener('click', (event) => {
-          event.stopPropagation()
-          this.engine.socket.emit('challenge', player.id)
-        })
-      }
-      li.appendChild(challengeButton)
-      playersListElement.appendChild(li)
-    })
-  }
-
-  getPlayerListElement() {
-    let playersList = document.querySelector('#players') as HTMLUListElement
-    if (!playersList) {
-      playersList = document.createElement('ul')
-      playersList.id = 'players'
-      this.uiLayer.appendChild(playersList)
-    }
-    return playersList
-  }
-
   showChallenge(attacker: string) {
     let timeLeft = 9
     // create a countdown timer for the challenge of 10 seconds
     const timer = setInterval(() => {
       if (timeLeft <= 0) {
         clearInterval(timer)
-        challengeElement.remove()
+        removeChallengeElement()
       } else {
         // floor time left to the nearest second
         acceptButton.innerText = `Accept (${timeLeft})`
@@ -123,24 +76,29 @@ export class UIManager {
     }, 1000)
 
     const challengeElement = document.createElement('div')
+    challengeElement.classList.add('toast')
     challengeElement.id = 'challenge'
     challengeElement.innerHTML = `
-      <p>${
+      <p><em>${
         this.gameState.players[attacker]?.name ?? attacker
-      } is challenging you!</p>
-      <button id="accept">Accept (${timeLeft + 1})</button>
-      <button id="reject">Reject</button>
+      }</em> is challenging you! <span class="emoji">💣</span></p>
+      <div>
+        <button id="reject">Reject</button>
+        <button id="accept" class="primary">Accept (${timeLeft + 1})</button>
+      </div>
     `
-    challengeElement.style.padding = '1rem'
-    challengeElement.style.position = 'fixed'
-    challengeElement.style.bottom = '0'
-    challengeElement.style.left = '0'
-    challengeElement.style.width = '100%'
-    challengeElement.style.backgroundColor = '#fff'
-    challengeElement.style.textAlign = 'center'
-    challengeElement.style.boxSizing = 'border-box'
+
+    function removeChallengeElement() {
+      challengeElement.classList.remove('visible')
+      setTimeout(() => {
+        challengeElement.remove()
+      }, 400)
+    }
 
     this.uiLayer.appendChild(challengeElement)
+    setTimeout(() => {
+      challengeElement.classList.add('visible')
+    })
 
     const acceptButton = challengeElement.querySelector(
       '#accept'
@@ -150,7 +108,7 @@ export class UIManager {
       event.stopPropagation()
       this.engine.socket.emit('accept', attacker)
       this.cleanUpGame()
-      challengeElement.remove()
+      removeChallengeElement()
     })
 
     const rejectButton = challengeElement.querySelector(
@@ -158,7 +116,7 @@ export class UIManager {
     ) as HTMLButtonElement
     rejectButton.addEventListener('click', (event) => {
       event.stopPropagation()
-      challengeElement.remove()
+      removeChallengeElement()
     })
   }
 
@@ -166,7 +124,6 @@ export class UIManager {
     const overlay = createGameOverOverlay(reason, (e: Event) => {
       e.stopPropagation()
       this.cleanUpGame()
-      this.updatePlayerList(this.gameState.players, this.engine.socket.id)
     })
     this.uiLayer.appendChild(overlay)
   }

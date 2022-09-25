@@ -34,6 +34,10 @@ export class BattleShip implements Experience {
       transports: ['websocket'],
     }) as TypedClient
 
+    this.socket.on('disconnect', (reason, description) => {
+      console.error('disconnected', reason, description)
+    })
+
     this.engine.setSocket(this.socket)
 
     this.gameState = new ClientGameState(this.socket)
