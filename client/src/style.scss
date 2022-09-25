@@ -24,7 +24,7 @@ body,
   --box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
   --dark-color: #333;
   --light-color: #fff;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -55,7 +55,7 @@ h6 {
   position: absolute;
   top: 0;
   margin: 0 auto;
-  height: 100vh;
+  height: 100%;
   width: 100%;
   pointer-events: none !important;
 }
