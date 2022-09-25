@@ -73,6 +73,8 @@ export class UIManager {
   }
 
   showChallenge(attacker: string) {
+    if (document.querySelector('#challenge')) return
+
     let timeLeft = 9
     // create a countdown timer for the challenge of 10 seconds
     const timer = setInterval(() => {
