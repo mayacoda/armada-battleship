@@ -163,10 +163,11 @@ export class BattleShip implements Experience {
       this.positionPlayer(player)
     }
 
-    for (const boats of Object.keys(this.otherPlayers)) {
-      if (!this.gameState.players[boats]) {
-        this.engine.scene.remove(this.otherPlayers[boats])
-        delete this.otherPlayers[boats]
+    for (const boat of Object.keys(this.otherPlayers)) {
+      if (!this.gameState.players[boat]) {
+        this.otherPlayers[boat].cleanUp()
+        this.engine.scene.remove(this.otherPlayers[boat])
+        delete this.otherPlayers[boat]
       }
     }
   }
