@@ -23,15 +23,17 @@ export class Sizes extends EventEmitter {
   }
 
   public setContainsSizing() {
-    this.width = window.innerWidth
-    this.height = window.innerHeight
+    const { width, height } = getWidthAndHeight()
+    this.width = width
+    this.height = height
 
     this.aspectRatio = this.width / this.height
   }
 
   public setCoverSizing() {
-    const maxWidth = window.innerWidth
-    const maxHeight = window.innerHeight
+    const { width, height } = getWidthAndHeight()
+    const maxWidth = width
+    const maxHeight = height
 
     if (maxWidth / maxHeight < this.aspectRatio) {
       this.width = maxWidth
@@ -58,5 +60,18 @@ export class Sizes extends EventEmitter {
     } else {
       this.setCoverSizing()
     }
+  }
+}
+
+function getWidthAndHeight() {
+  const ui = document.querySelector('#ui')
+  if (ui instanceof HTMLElement) {
+    const width = ui.clientWidth
+    const height = ui.clientHeight
+    return { width, height }
+  } else {
+    const width = window.innerWidth
+    const height = window.innerHeight
+    return { width, height }
   }
 }
