@@ -60,11 +60,6 @@ export class BattleshipGameInstance extends EventEmitter {
 
     this.initGrids()
 
-    // should show both grids, not just the players own
-    // the enemy's grid should be sanitized
-    player1Socket.emit('initGrid', this.player1.grid)
-    player2Socket.emit('initGrid', this.player2.grid)
-
     player1Socket.emit('initShips', this.player1.ships)
     player2Socket.emit('initShips', this.player2.ships)
 

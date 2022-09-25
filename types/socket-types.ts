@@ -18,7 +18,6 @@ export type ServerToClientEvents = {
   initPlayer: (player: Player) => void
   challenge: (attacker: string) => void
   startGame: (param: { attacker: string; defender: string }) => void
-  initGrid: (grid: number[][]) => void
   initShips: (ships: Ship[]) => void
   yourTurn: () => void
   endTurn: () => void
