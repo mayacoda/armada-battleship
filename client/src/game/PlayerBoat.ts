@@ -40,11 +40,20 @@ export class PlayerBoat extends Boat {
         }
       })
     })
+
+    this.gameState.on(
+      'reposition',
+      ({ x, y, z }: { x: number; y: number; z: number }) => {
+        tryCatch(() => {
+          this.setPositionFromVector(new THREE.Vector3(x, y, z))
+        })
+      }
+    )
   }
 
-  update() {
-    this.updatePlayerPosition()
-    super.update()
+  update(delta: number) {
+    this.updatePlayerPosition(delta)
+    super.update(delta)
   }
 
   private positionCamera() {
@@ -71,17 +80,18 @@ export class PlayerBoat extends Boat {
   }
 
   private setPositionFromVector(vec3: THREE.Vector3) {
-    vec3.multiplyScalar(this.gameState?.waterScale ?? 1)
+    let scale = this.gameState?.waterScale ?? 1
+    vec3.multiplyScalar(scale)
 
-    this.position.set(vec3.x, vec3.y, vec3.z)
+    this.position.copy(vec3)
     this.lookAt(new THREE.Vector3(0, 0, 0))
   }
 
-  private updatePlayerPosition() {
+  private updatePlayerPosition(delta: number) {
     if (this.targetPosition) {
       const direction = this.targetPosition.clone().sub(this.position)
       const distance = direction.length()
-      const speed = 0.02
+      const speed = 1.2 * delta
       const move = Math.min(distance, speed)
       this.position.add(direction.normalize().multiplyScalar(move))
 
@@ -90,7 +100,10 @@ export class PlayerBoat extends Boat {
         this.lookAtPoint = null
       }
 
-      this.socket.emit('move', this.position.clone().normalize())
+      let newPosition = this.position
+        .clone()
+        .divideScalar(this.gameState.waterScale)
+      this.socket.emit('move', newPosition)
     }
 
     if (this.lookAtPoint) {

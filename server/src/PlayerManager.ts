@@ -29,6 +29,7 @@ export class PlayerManager {
       socket.emit('initPlayer', player)
     })
     socket.on('challenge', (playerId) => {
+      if (!this.players[playerId] || this.players[playerId].isPlaying) return
       this.challengePlayer(socket.id, playerId)
     })
     socket.on('accept', (playerId) => {

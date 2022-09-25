@@ -1,6 +1,7 @@
 import { TypedClient } from '../../../types/socket-types'
 import { EventEmitter } from '../engine/utilities/EventEmitter'
 import { Player } from '../../../types/player-types'
+import { tryCatch } from './html/helpers'
 
 export type SceneType = 'login' | 'idle' | 'playing'
 
@@ -26,8 +27,15 @@ export class ClientGameState extends EventEmitter {
     })
 
     this.socket.on('updatePlayers', (players: Record<string, Player>) => {
-      this.playersMap = players
-      this.emit('updatePlayers', players)
+      tryCatch(() => {
+        const scaleChange =
+          Object.keys(players).length !== Object.keys(this.players).length
+        this.playersMap = players
+        if (scaleChange && this.scene === 'idle') {
+          this.emit('reposition', players[this.id]?.position)
+        }
+        this.emit('updatePlayers', players)
+      })
     })
   }
 

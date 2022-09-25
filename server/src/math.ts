@@ -12,8 +12,8 @@ export function normalize(vec3: Vec3) {
 
 export function randomVec3(): Vec3 {
   return normalize({
-    x: Math.random() - 0.5,
+    x: Math.random() - 0.5 * 1.5,
     y: 0,
-    z: Math.random() - 0.5,
+    z: Math.random() - 0.5 * 1.5,
   })
 }

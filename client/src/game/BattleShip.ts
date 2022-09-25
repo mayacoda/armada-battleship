@@ -66,12 +66,12 @@ export class BattleShip implements Experience {
     this.startLoginScene()
   }
 
-  update() {
+  update(delta: number) {
     if (!this.ready) return
 
     if (this.gameState.scene === 'idle') {
-      Object.values(this.otherPlayers).forEach((boat) => boat.update())
-      this.currentPlayer.update()
+      Object.values(this.otherPlayers).forEach((boat) => boat.update(delta))
+      this.currentPlayer.update(delta)
     }
   }
 
@@ -103,7 +103,7 @@ export class BattleShip implements Experience {
     this.engine.scene.add(this.water)
     this.engine.scene.add(this.currentPlayer)
 
-    this.currentPlayer.update()
+    this.currentPlayer.update(0)
 
     this.ready = true
   }

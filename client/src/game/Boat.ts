@@ -22,6 +22,14 @@ export class Boat extends THREE.Mesh {
     this.nameElement.classList.add('boat-name')
     this.engine.ui.container.appendChild(this.nameElement)
 
+    this.nameElement.addEventListener('click', (event) => {
+      if (!this.userData.isPlayer) {
+        event.stopPropagation()
+        event.preventDefault()
+        this.showChallengeButton()
+      }
+    })
+
     this.challengeButton = document.createElement('button')
     this.challengeButton.classList.add('challenge-button')
     this.challengeButton.innerHTML = '<span class="emoji">💣</span>'
@@ -68,7 +76,8 @@ export class Boat extends THREE.Mesh {
     }px) translateY(${y - yOffsetButton}px)`
   }
 
-  update() {
+  // @ts-ignore
+  update(delta: number) {
     this.updateElementsPosition()
   }
 
