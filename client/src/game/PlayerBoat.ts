@@ -16,7 +16,6 @@ export class PlayerBoat extends Boat {
     private gameState: ClientGameState
   ) {
     super(engine)
-    this.material.color.set('#bb4a0d')
     this.positionCamera()
 
     const clickListener = (event: THREE.Intersection[]) => {
@@ -66,15 +65,12 @@ export class PlayerBoat extends Boat {
   private listenForClick(event: THREE.Intersection[]) {
     if (event.length > 0) {
       let hit = event[0]
+      console.log(hit.object.name)
       if (hit.object.name === 'water') {
         this.lookAtPoint = this.smoothLookAt(hit.point)
         this.targetPosition = hit.point
-      } else if (
-        hit.object.name === 'boat' &&
-        hit.object instanceof Boat &&
-        !hit.object.userData.isPlayer
-      ) {
-        hit.object.showChallengeButton()
+      } else if (hit.object.name === 'boat' && !hit.object.userData.isPlayer) {
+        hit.object.userData.showChallengeButton()
       }
     }
   }

@@ -11,9 +11,10 @@ import { tryCatch } from './html/helpers'
 import { PlayerBoat } from './PlayerBoat'
 import { Water } from './Water'
 import { GameBoard } from './GameBoard'
+import { Resource } from '../engine/Resources'
 
 export class BattleShip implements Experience {
-  resources = []
+  resources: Resource[] = [Boat.resource, ...GameBoard.resources]
   socket!: TypedClient
   uiManager!: UIManager
   gameState!: ClientGameState

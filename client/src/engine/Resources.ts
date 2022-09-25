@@ -14,7 +14,7 @@ export type Resource =
       path: string[]
     }
 
-type AssetType = 'gltf' | 'texture' | 'cubeTexture'
+export type AssetType = 'gltf' | 'texture' | 'cubeTexture'
 
 type Loaders = {
   gltf: GLTFLoader

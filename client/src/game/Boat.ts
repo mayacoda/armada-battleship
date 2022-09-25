@@ -1,24 +1,39 @@
 import * as THREE from 'three'
 import { Engine } from '../engine/Engine'
+import { Resource } from '../engine/Resources'
 
-const torusGeometry = new THREE.TorusGeometry(0.3, 0.1, 16, 100)
 const frustum = new THREE.Frustum()
 
 export class Boat extends THREE.Mesh {
-  name = 'boat'
-  material: THREE.MeshStandardMaterial
+  static resource: Resource = {
+    name: 'rowboat',
+    path: '/rowboat.glb',
+    type: 'gltf',
+  }
 
   nameElement: HTMLDivElement
   challengeButton: HTMLButtonElement
 
-  constructor(protected engine: Engine, color = '#4f322b') {
+  constructor(protected engine: Engine) {
     super()
-    this.geometry = torusGeometry
-    this.material = new THREE.MeshStandardMaterial({
-      color,
-    })
+    const gltfScene = this.engine.resources.getItem(Boat.resource.name)
+    console.log(gltfScene.scene)
+    let clone = gltfScene.scene.clone()
+    this.add(...clone.children)
 
-    this.castShadow = true
+    this.userData.showChallengeButton = () => {
+      this.showChallengeButton()
+    }
+
+    this.traverse((child: THREE.Object3D) => {
+      child.name = 'boat'
+      child.userData = this.userData
+
+      if (child instanceof THREE.Mesh) {
+        child.castShadow = true
+        child.receiveShadow = true
+      }
+    })
 
     this.nameElement = document.createElement('div')
     this.nameElement.classList.add('boat-name')

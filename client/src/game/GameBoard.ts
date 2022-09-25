@@ -4,8 +4,11 @@ import { GRID_SIZE, SHIP_TYPE } from '../../../constants/constants'
 import { Engine } from '../engine/Engine'
 import { Ship } from '../../../types/socket-types'
 import { tryCatch } from './html/helpers'
+import { Resource } from '../engine/Resources'
 
 export class GameBoard extends Object3D {
+  static resources: Resource[] = []
+
   name = 'gameBoard'
   playerGrid!: GridHelper
   enemyGrid!: GridHelper
