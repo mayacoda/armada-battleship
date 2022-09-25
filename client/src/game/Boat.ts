@@ -6,7 +6,7 @@ const frustum = new THREE.Frustum()
 
 export class Boat extends THREE.Mesh {
   name = 'boat'
-  material: THREE.MeshBasicMaterial
+  material: THREE.MeshStandardMaterial
 
   nameElement: HTMLDivElement
   challengeButton: HTMLButtonElement
@@ -14,9 +14,11 @@ export class Boat extends THREE.Mesh {
   constructor(protected engine: Engine, color = '#4f322b') {
     super()
     this.geometry = torusGeometry
-    this.material = new THREE.MeshBasicMaterial({
+    this.material = new THREE.MeshStandardMaterial({
       color,
     })
+
+    this.castShadow = true
 
     this.nameElement = document.createElement('div')
     this.nameElement.classList.add('boat-name')

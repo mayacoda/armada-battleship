@@ -63,6 +63,8 @@ export class BattleShip implements Experience {
       }
     })
 
+    this.initializeLights()
+
     this.startLoginScene()
   }
 
@@ -95,6 +97,17 @@ export class BattleShip implements Experience {
       this.gameState
     )
     this.water = new Water()
+
+    const background = new THREE.Mesh(
+      new THREE.PlaneGeometry(40, 40),
+      new THREE.MeshStandardMaterial({
+        color: '#2f8c9b',
+      })
+    )
+    background.rotation.x = -Math.PI / 2
+    background.position.y = -0.01
+    this.engine.scene.add(background)
+
     this.gameBoard = new GameBoard(this.engine)
 
     let scale = this.gameState.waterScale
@@ -183,5 +196,42 @@ export class BattleShip implements Experience {
         player.rotation as THREE.Quaternion
       )
     }
+  }
+
+  private initializeLights() {
+    const hemisphereLight = new THREE.HemisphereLight(
+      '#ffddc7',
+      '#b2e8f5',
+      0.82
+    )
+    this.engine.debug.gui.add(hemisphereLight, 'intensity', 0, 1, 0.01)
+    // add hemisphere skyColor and groundColor to debug gui
+    this.engine.debug.gui.addColor(hemisphereLight, 'color').name('skyColor')
+    this.engine.debug.gui.addColor(hemisphereLight, 'groundColor')
+
+    this.engine.scene.add(hemisphereLight)
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.69)
+    directionalLight.shadow.camera.far = 50
+    directionalLight.position.set(0, 7.2, 8)
+    directionalLight.castShadow = true
+
+    const cameraSize = 10
+    directionalLight.shadow.camera.right = cameraSize
+    directionalLight.shadow.camera.left = -cameraSize
+    directionalLight.shadow.camera.top = cameraSize
+    directionalLight.shadow.camera.bottom = -cameraSize
+
+    directionalLight.shadow.mapSize.x = 2048
+    directionalLight.shadow.mapSize.y = 2048
+
+    // add directional light to debug
+    this.engine.debug.gui.add(directionalLight, 'intensity', 0, 1, 0.01)
+    this.engine.debug.gui.addColor(directionalLight, 'color').name('lightColor')
+    this.engine.debug.gui.add(directionalLight.position, 'x', -10, 10, 0.01)
+    this.engine.debug.gui.add(directionalLight.position, 'y', -10, 10, 0.01)
+    this.engine.debug.gui.add(directionalLight.position, 'z', -10, 10, 0.01)
+
+    this.engine.scene.add(directionalLight)
   }
 }
