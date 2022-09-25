@@ -39,15 +39,26 @@ export class UIManager {
 
   // Login
   async showLogin(): Promise<string> {
+    const loginModal = document.createElement('div')
+    loginModal.classList.add('overlay', 'login-modal')
+    loginModal.id = 'login'
+    loginModal.innerHTML = `
+<div class="container">
+    <h1>Armada Battleship</h1>
+    <div class="emoji">⛵️</div>
+</div>`
+
     const loginForm = document.createElement('form')
     loginForm.id = 'login-form'
     loginForm.innerHTML = `
-      <input type="text" name="username" placeholder="Username" autocomplete="off" />
-      <input type="submit" value="Login" />
+      <input type="text" name="username" placeholder="Enter player name" autocomplete="off" />
+      <input type="submit" class="primary" value="Play!" />
     `
     // add padding and style to log in form
     loginForm.style.padding = '1rem'
-    this.uiLayer.appendChild(loginForm)
+
+    loginModal.querySelector('.container')!.appendChild(loginForm)
+    this.uiLayer.appendChild(loginModal)
 
     return new Promise((resolve) => {
       loginForm.addEventListener('submit', (e) => {
@@ -56,7 +67,7 @@ export class UIManager {
           'input[name="username"]'
         ) as HTMLInputElement
         resolve(username.value)
-        loginForm.remove()
+        loginModal.remove()
       })
     })
   }

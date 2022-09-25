@@ -6,12 +6,7 @@ export function createGameOverOverlay(
 ) {
   // create overlay to prevent user from clicking on anything else
   const overlay = document.createElement('div')
-  overlay.style.position = 'fixed'
-  overlay.style.top = '0'
-  overlay.style.left = '0'
-  overlay.style.width = '100%'
-  overlay.style.height = '100%'
-  overlay.style.backgroundColor = 'rgba(0,0,0,0.5)'
+  overlay.classList.add('overlay')
   overlay.id = 'overlay'
 
   let text = ''
@@ -32,13 +27,12 @@ export function createGameOverOverlay(
 
   const gameOverModal = document.createElement('div')
   gameOverModal.id = 'game-over-modal'
+  gameOverModal.classList.add('container')
   gameOverModal.innerHTML = `
       <h1>Game Over</h1>
       <p>${text}</p>
       <button id="play-again">Okay</button>
     `
-  gameOverModal.style.padding = '1rem'
-  gameOverModal.style.backgroundColor = '#fff'
   gameOverModal.style.textAlign = 'center'
   overlay.appendChild(gameOverModal)
 

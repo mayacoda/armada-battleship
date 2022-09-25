@@ -24,7 +24,7 @@ export class Boat extends THREE.Mesh {
 
     this.challengeButton = document.createElement('button')
     this.challengeButton.classList.add('challenge-button')
-    this.challengeButton.innerText = 'Challenge'
+    this.challengeButton.innerHTML = '<span class="emoji">💣</span>'
     this.challengeButton.style.display = 'none'
     this.engine.ui.container.appendChild(this.challengeButton)
 
@@ -57,13 +57,15 @@ export class Boat extends THREE.Mesh {
     const xOffsetName = this.nameElement.clientWidth / 2
     const yOffsetName = 80
 
-    const xOffsetButton = this.challengeButton.clientWidth / 2
     this.nameElement.style.transform = `translateX(${
       x - xOffsetName
     }px) translateY(${y - yOffsetName}px)`
+
+    const xOffsetButton = this.challengeButton.clientWidth / 2
+    const yOffsetButton = 20
     this.challengeButton.style.transform = `translateX(${
       x - xOffsetButton
-    }px) translateY(${y}px)`
+    }px) translateY(${y - yOffsetButton}px)`
   }
 
   update() {

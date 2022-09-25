@@ -13,12 +13,20 @@
   src: url('assets/fonts/OpenSans-Regular.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Staatliches';
+  font-weight: bold;
+  src: url('assets/fonts/Staatliches-Regular.ttf') format('truetype');
+}
+
 html,
 body,
 #canvas {
   --primary-color: #1ca1ce;
   --primary-color-dark: #0e5a6e;
   --border-radius: 0.3em;
+  --basic-color: #dadada;
+  --box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
   height: 100%;
   width: 100%;
   margin: 0;
@@ -30,6 +38,15 @@ html,
 body,
 #canvas {
   background: #737373;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Staatliches', cursive;
 }
 
 #canvas {
@@ -79,7 +96,7 @@ body,
     transform: translateY(0);
   }
 
-  box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
+  box-shadow: var(--box-shadow);
 }
 
 button,
@@ -92,6 +109,7 @@ input[type='submit'] {
   padding: 0.75em 1.5em;
   cursor: pointer;
   outline: none;
+  background-color: var(--basic-color);
 
   &.primary {
     background: var(--primary-color);
@@ -105,10 +123,73 @@ input[type='submit'] {
 
 input {
   font-family: 'Open Sans', sans-serif !important;
-  border: 0;
+  border: 1px solid var(--basic-color);
   border-radius: var(--border-radius);
   padding: 0.75em 1.5em;
   cursor: pointer;
   outline: none;
   background: #fff;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+
+  .container {
+    background-color: #fff;
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 75%;
+    transform: translate(-50%, -50%);
+    padding: 1.5em;
+    border-radius: var(--border-radius);
+  }
+}
+
+.login-modal {
+  text-align: center;
+
+  .emoji {
+    display: block;
+    font-size: 4em;
+    border-radius: 50%;
+    background: linear-gradient(0deg, #145494 0%, var(--primary-color) 100%);
+    height: 2.5em;
+    width: 2.5em;
+    line-height: 2.5em;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  input {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+  }
+
+  input[type='text'] {
+    margin-bottom: 1em;
+  }
+}
+
+.challenge-button {
+  display: block;
+  height: 3em;
+  width: 3em;
+  font-size: 2em;
+  padding: 0;
+
+  background: #fff;
+  text-align: center;
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  box-shadow: var(--box-shadow);
 }
