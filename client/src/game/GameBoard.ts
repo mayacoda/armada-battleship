@@ -1,13 +1,17 @@
 import * as THREE from 'three'
 import { GridHelper, Intersection, Object3D } from 'three'
-import { GRID_SIZE, SHIP_TYPE } from '../../../constants/constants'
+import { GRID_SIZE, SHIP_SIZE, SHIP_TYPE } from '../../../constants/constants'
 import { Engine } from '../engine/Engine'
 import { Ship } from '../../../types/socket-types'
 import { tryCatch } from './html/helpers'
 import { Resource } from '../engine/Resources'
 
 export class GameBoard extends Object3D {
-  static resources: Resource[] = []
+  static resource: Resource = {
+    name: 'ships',
+    path: '/ships.glb',
+    type: 'gltf',
+  }
 
   name = 'gameBoard'
   playerGrid!: GridHelper
@@ -111,31 +115,40 @@ export class GameBoard extends Object3D {
   }
 
   private populateGrid(ships: Ship[]) {
-    ships.forEach((ship) => {
-      // add the ship to the grid
-      const radius = 0.2
-      const geometry = new THREE.CylinderGeometry(
-        radius,
-        radius,
-        ship.type * this.squareWidth
+    const shipModels = this.engine.resources
+      .getItem(GameBoard.resource.name)
+      .scene.children.reduce(
+        (acc: Record<string, THREE.Mesh>, child: THREE.Mesh) => {
+          acc[child.name] = child
+          return acc
+        },
+        {}
       )
-      const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-      const mesh = new THREE.Mesh(geometry, material)
-      mesh.name = 'ship'
+    console.log('shipModels', shipModels)
+
+    ships.forEach((ship) => {
+      let mesh: THREE.Mesh
 
       switch (ship.type) {
         case SHIP_TYPE.CARRIER:
-          material.color = new THREE.Color('#c73c3c')
+          mesh = shipModels.carrier.clone()
           break
         case SHIP_TYPE.BATTLESHIP:
-          material.color = new THREE.Color('#f3bf12')
+          mesh = shipModels.battleship.clone()
           break
         case SHIP_TYPE.CRUISER:
-          material.color = new THREE.Color('#88d341')
+          mesh = shipModels.cruiser.clone()
           break
         case SHIP_TYPE.SUBMARINE:
-          material.color = new THREE.Color('#13a1b4')
+          mesh = shipModels.submarine.clone()
       }
+
+      if (!mesh) debugger
+
+      mesh.name = 'ship'
+      mesh.scale.setScalar(this.squareWidth)
+
+      mesh.rotation.x = Math.PI / 2
 
       mesh.position.copy(this.playerGrid.position)
       mesh.position.x -= this.gridWidth / 2
@@ -146,13 +159,13 @@ export class GameBoard extends Object3D {
 
       if (ship.direction === 'horizontal') {
         // move the ship's center to the left
-        mesh.position.x += (ship.type * this.squareWidth) / 2
-        mesh.rotation.z = Math.PI / 2
+        mesh.position.x += (SHIP_SIZE[ship.type] * this.squareWidth) / 2
+        mesh.rotation.y = -Math.PI / 2
         // move mesh up by half a square
         mesh.position.y += this.squareWidth / 2
       } else if (ship.direction === 'vertical') {
         // move the ship's center up
-        mesh.position.y += (ship.type * this.squareWidth) / 2
+        mesh.position.y += (SHIP_SIZE[ship.type] * this.squareWidth) / 2
         // move mesh right by half a square
         mesh.position.x += this.squareWidth / 2
       }

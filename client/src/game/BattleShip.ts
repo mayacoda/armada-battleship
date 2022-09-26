@@ -14,7 +14,7 @@ import { GameBoard } from './GameBoard'
 import { Resource } from '../engine/Resources'
 
 export class BattleShip implements Experience {
-  resources: Resource[] = [Boat.resource, ...GameBoard.resources]
+  resources: Resource[] = [Boat.resource, GameBoard.resource]
   socket!: TypedClient
   uiManager!: UIManager
   gameState!: ClientGameState
@@ -107,6 +107,7 @@ export class BattleShip implements Experience {
     )
     background.rotation.x = -Math.PI / 2
     background.position.y = -0.01
+    background.name = 'background'
     this.engine.scene.add(background)
 
     this.gameBoard = new GameBoard(this.engine)
@@ -126,12 +127,20 @@ export class BattleShip implements Experience {
     this.currentPlayer.reboot()
     this.engine.scene.add(this.currentPlayer)
     this.engine.scene.add(this.water)
+
+    this.engine.scene.traverse((obj) => {
+      if (obj.name === 'background') obj.visible = true
+    })
   }
 
   private cleanUpIdleScene() {
     Object.values(this.otherPlayers).forEach((boat) => {
       this.engine.scene.remove(boat)
       boat.cleanUp()
+    })
+
+    this.engine.scene.traverse((obj) => {
+      if (obj.name === 'background') obj.visible = false
     })
 
     this.engine.scene.remove(this.currentPlayer)

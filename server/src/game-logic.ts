@@ -1,10 +1,11 @@
-import { GRID_SIZE, SHIP_TYPE } from '../../constants/constants.js'
+import { GRID_SIZE, SHIP_SIZE, SHIP_TYPE } from '../../constants/constants.js'
 import { Ship } from '../../types/socket-types'
 
-export function placeShip(grid: number[][], size: SHIP_TYPE): Ship {
+export function placeShip(grid: number[][], type: SHIP_TYPE): Ship {
   const x = Math.floor(Math.random() * (GRID_SIZE - 1))
   const y = Math.floor(Math.random() * (GRID_SIZE - 1))
   const direction = Math.floor(Math.random() * 2)
+  const size = SHIP_SIZE[type]
   let valid = true
   for (let i = 0; i < size; i++) {
     if (direction === 0) {
@@ -28,9 +29,9 @@ export function placeShip(grid: number[][], size: SHIP_TYPE): Ship {
     return {
       start: { x, y },
       direction: direction === 0 ? 'horizontal' : 'vertical',
-      type: size,
+      type,
     }
   } else {
-    return placeShip(grid, size)
+    return placeShip(grid, type)
   }
 }

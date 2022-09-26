@@ -17,7 +17,6 @@ export class Boat extends THREE.Mesh {
   constructor(protected engine: Engine) {
     super()
     const gltfScene = this.engine.resources.getItem(Boat.resource.name)
-    console.log(gltfScene.scene)
     let clone = gltfScene.scene.clone()
     this.add(...clone.children)
 

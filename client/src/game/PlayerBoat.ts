@@ -18,10 +18,6 @@ export class PlayerBoat extends Boat {
     super(engine)
     this.positionCamera()
 
-    const clickListener = (event: THREE.Intersection[]) => {
-      this.listenForClick(event)
-    }
-
     this.userData.isPlayer = true
 
     this.socket.on('initPlayer', (player: Player) => {
@@ -30,12 +26,22 @@ export class PlayerBoat extends Boat {
       this.updateName(player.name)
     })
 
+    let unregisterClickListener: (() => void) | null = null
+
     this.gameState.on('sceneChanged', () => {
       tryCatch(() => {
         if (this.gameState.scene === 'idle') {
-          this.engine.raycaster.on('click', clickListener)
-        } else {
-          this.engine.raycaster.off('click', clickListener)
+          if (!unregisterClickListener) {
+            unregisterClickListener = this.engine.raycaster.on(
+              'click',
+              (event: THREE.Intersection[]) => {
+                this.listenForClick(event)
+              }
+            )
+          }
+        } else if (unregisterClickListener) {
+          unregisterClickListener()
+          unregisterClickListener = null
         }
       })
     })
@@ -65,7 +71,6 @@ export class PlayerBoat extends Boat {
   private listenForClick(event: THREE.Intersection[]) {
     if (event.length > 0) {
       let hit = event[0]
-      console.log(hit.object.name)
       if (hit.object.name === 'water') {
         this.lookAtPoint = this.smoothLookAt(hit.point)
         this.targetPosition = hit.point
