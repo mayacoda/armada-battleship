@@ -212,16 +212,16 @@ export class BattleShip implements Experience {
     const hemisphereLight = new THREE.HemisphereLight(
       '#ffddc7',
       '#b2e8f5',
-      0.82
+      1.99
     )
-    this.engine.debug.gui.add(hemisphereLight, 'intensity', 0, 1, 0.01)
+    this.engine.debug.gui.add(hemisphereLight, 'intensity', 0, 5, 0.01)
     // add hemisphere skyColor and groundColor to debug gui
     this.engine.debug.gui.addColor(hemisphereLight, 'color').name('skyColor')
     this.engine.debug.gui.addColor(hemisphereLight, 'groundColor')
 
     this.engine.scene.add(hemisphereLight)
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.69)
+    const directionalLight = new THREE.DirectionalLight('#fff8cc', 2.91)
     directionalLight.shadow.camera.far = 50
     directionalLight.position.set(0, 7.2, 8)
     directionalLight.castShadow = true
@@ -236,7 +236,7 @@ export class BattleShip implements Experience {
     directionalLight.shadow.mapSize.y = 2048
 
     // add directional light to debug
-    this.engine.debug.gui.add(directionalLight, 'intensity', 0, 1, 0.01)
+    this.engine.debug.gui.add(directionalLight, 'intensity', 0, 5, 0.01)
     this.engine.debug.gui.addColor(directionalLight, 'color').name('lightColor')
     this.engine.debug.gui.add(directionalLight.position, 'x', -10, 10, 0.01)
     this.engine.debug.gui.add(directionalLight.position, 'y', -10, 10, 0.01)

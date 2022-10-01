@@ -4,7 +4,7 @@ import { Resource } from '../engine/Resources'
 
 const frustum = new THREE.Frustum()
 
-export class Boat extends THREE.Mesh {
+export class Boat extends THREE.Object3D {
   static resource: Resource = {
     name: 'rowboat',
     path: '/rowboat.glb',
@@ -31,6 +31,13 @@ export class Boat extends THREE.Mesh {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true
         child.receiveShadow = true
+        if (
+          child.material instanceof THREE.MeshStandardMaterial &&
+          child.material.map
+        ) {
+          child.material.map.minFilter = THREE.LinearFilter
+          child.material.map.magFilter = THREE.LinearFilter
+        }
       }
     })
 

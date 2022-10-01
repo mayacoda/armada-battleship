@@ -55,7 +55,6 @@ export class BattleshipGameInstance extends EventEmitter {
       return
     }
 
-    // both players join the same room
     player1Socket.join(this.gameId)
     player2Socket.join(this.gameId)
 
