@@ -6,12 +6,7 @@ import {
   TypedSocket,
 } from '../../types/socket-types'
 import { EventEmitter } from 'events'
-import {
-  GRID_SIZE,
-  SHIP_SIZE,
-  SHIP_TYPE,
-  TOTAL_SHIPS,
-} from '../../constants/constants.js'
+import { GRID_SIZE, SHIP_TYPE, TOTAL_SHIPS } from '../../constants/constants.js'
 import { placeShip } from './game-logic.js'
 
 type BattleshipPlayer = Player & {
