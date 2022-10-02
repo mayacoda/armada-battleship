@@ -175,14 +175,16 @@ export class GameBoard extends Object3D {
   }
 
   cleanUp() {
-    const ships: THREE.Object3D[] = []
+    const toRemove: THREE.Object3D[] = []
     this.traverse((child) => {
-      if (child.name === 'ship') {
-        ships.push(child)
+      if (child.name === 'ship' || child.name === 'marker') {
+        toRemove.push(child)
       }
     })
 
-    this.remove(...ships)
+    this.enemyGridBackdrop.visible = false
+
+    this.remove(...toRemove)
   }
 
   private isPointOnEnemyGrid(waterHit: Intersection | undefined) {
@@ -222,12 +224,14 @@ export class GameBoard extends Object3D {
       const sphere = new THREE.Mesh(geometry, material)
       sphere.position.copy(this.coordinateToPoint(x, y, grid))
       sphere.position.z = 0.3
+      sphere.name = 'marker'
       this.add(sphere)
     } else {
       const geometry = new THREE.SphereGeometry(0.1)
       const material = new THREE.MeshBasicMaterial({ color: '#807d7d' })
       const box = new THREE.Mesh(geometry, material)
       box.position.copy(this.coordinateToPoint(x, y, grid))
+      box.name = 'marker'
       this.add(box)
     }
   }
