@@ -3,6 +3,8 @@ import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
 import { createGameOverOverlay } from './html/helpers'
 import { Engine } from '../engine/Engine'
+import boatImage from '../../assets/images/boat.svg'
+import bombImage from '../../assets/images/bomb.svg'
 
 export class UIManager {
   uiLayer: HTMLDivElement
@@ -45,7 +47,7 @@ export class UIManager {
     loginModal.innerHTML = `
 <div class="container">
     <h1>Armada Battleship</h1>
-    <div class="emoji">⛵️</div>
+    <div class="emoji"><img src="${boatImage}" />️</div>
 </div>`
 
     const loginForm = document.createElement('form')
@@ -94,7 +96,7 @@ export class UIManager {
     challengeElement.innerHTML = `
       <p><em>${
         this.gameState.players[attacker]?.name ?? attacker
-      }</em> is challenging you! <span class="emoji">💣</span></p>
+      }</em> is challenging you! <span class="emoji"><img src="${bombImage}" /></span></p>
       <div>
         <button id="reject">Reject</button>
         <button id="accept" class="primary">Accept (${timeLeft + 1})</button>

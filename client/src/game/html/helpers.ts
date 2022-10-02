@@ -1,4 +1,9 @@
 import { Player } from '../../../../types/player-types'
+import sparkles from '../../../assets/images/sparkles.svg'
+import cry from '../../../assets/images/cry.svg'
+import scream from '../../../assets/images/scream.svg'
+import brokenHeart from '../../../assets/images/broken_heart.svg'
+import whiteFlag from '../../../assets/images/white_flag.svg'
 
 export function createGameOverOverlay(
   reason: 'win' | 'lose' | 'disconnect' | 'forfeit',
@@ -12,16 +17,16 @@ export function createGameOverOverlay(
   let text = ''
   switch (reason) {
     case 'win':
-      text = 'You won! <span class="emoji">✨</span>'
+      text = `You won! <span class="emoji"><img src="${sparkles}"></span>`
       break
     case 'lose':
-      text = 'You lost! <span class="emoji">😢</span>'
+      text = `You lost! <span class="emoji"><img src="${cry}"></span>`
       break
     case 'forfeit':
-      text = 'You forfeited! <span class="emoji">😱</span>'
+      text = `You forfeited! <span class="emoji"><img src="${scream}"></span>`
       break
     case 'disconnect':
-      text = 'Your opponent disconnected! <span class="emoji">💔</span>'
+      text = `Your opponent disconnected! <span class="emoji"><img src="${brokenHeart}"></span>`
       break
   }
 
@@ -60,7 +65,7 @@ export function createGameUI(
 
   // show forfeit game button
   const forfeitButton = document.createElement('button')
-  forfeitButton.innerHTML = '<span class="emoji">🏳</span> Forfeit'
+  forfeitButton.innerHTML = `<span class="emoji"><img src="${whiteFlag}"></span> Forfeit`
   forfeitButton.addEventListener('click', forfeitCallback)
 
   gameContainer.appendChild(forfeitButton)

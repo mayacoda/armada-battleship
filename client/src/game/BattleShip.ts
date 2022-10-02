@@ -153,7 +153,7 @@ export class BattleShip implements Experience {
 
   private startPlayingScene() {
     this.engine.scene.add(this.engine.camera.instance)
-    this.engine.camera.instance.position.set(0, 0, 10)
+    this.engine.camera.instance.position.set(0, -3, 10)
     this.engine.camera.instance.lookAt(0, 0, 0)
 
     this.engine.scene.add(this.gameBoard)

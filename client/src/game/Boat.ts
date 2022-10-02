@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { Engine } from '../engine/Engine'
-import { Resource } from '../engine/Resources'
+import type { Resource } from '../engine/Resources'
+import bombImage from '../../assets/images/bomb.svg'
 
 const frustum = new THREE.Frustum()
 
@@ -55,7 +56,7 @@ export class Boat extends THREE.Object3D {
 
     this.challengeButton = document.createElement('button')
     this.challengeButton.classList.add('challenge-button')
-    this.challengeButton.innerHTML = '<span class="emoji">💣</span>'
+    this.challengeButton.innerHTML = `<span class="emoji"><img src="${bombImage}" /></span>`
     this.challengeButton.style.display = 'none'
     this.engine.ui.container.appendChild(this.challengeButton)
 
