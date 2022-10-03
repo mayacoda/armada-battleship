@@ -5,8 +5,10 @@ import { Engine } from '../engine/Engine'
 import { Ship } from '../../../types/socket-types'
 import { tryCatch } from './html/helpers'
 import { Resource } from '../engine/Resources'
+import { WaterMaterial } from './WaterMaterial'
+import { GameEntity } from '../engine/GameEntity'
 
-export class GameBoard extends Object3D {
+export class GameBoard extends Object3D implements GameEntity {
   static resource: Resource = {
     name: 'ships',
     path: '/ships.glb',
@@ -19,6 +21,8 @@ export class GameBoard extends Object3D {
   enemyGridBackdrop!: THREE.Mesh
   gridWidth = 3.5
   squareWidth = this.gridWidth / GRID_SIZE
+
+  waterMaterial!: WaterMaterial
 
   constructor(private engine: Engine) {
     super()
@@ -64,14 +68,17 @@ export class GameBoard extends Object3D {
     })
   }
 
+  update(delta: number): void {
+    this.waterMaterial.update(delta)
+  }
+
   private createWater() {
-    const water = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 10),
-      new THREE.MeshBasicMaterial({
-        color: '#48c8de',
-      })
-    )
+    const waterMaterial = new WaterMaterial(0.7)
+    const water = new THREE.Mesh(new THREE.PlaneGeometry(14, 14), waterMaterial)
+
+    this.waterMaterial = waterMaterial
     water.name = 'water'
+    water.receiveShadow = true
     this.add(water)
   }
 
@@ -89,7 +96,9 @@ export class GameBoard extends Object3D {
     this.enemyGridBackdrop = new THREE.Mesh(
       new THREE.PlaneGeometry(this.gridWidth, this.gridWidth),
       new THREE.MeshBasicMaterial({
-        color: '#f00',
+        color: '#b90000',
+        transparent: true,
+        opacity: 0.5,
       })
     )
     this.enemyGridBackdrop.position.copy(enemyGrid.position)
@@ -119,6 +128,7 @@ export class GameBoard extends Object3D {
       .getItem(GameBoard.resource.name)
       .scene.children.reduce(
         (acc: Record<string, THREE.Mesh>, child: THREE.Mesh) => {
+          child.castShadow = true
           acc[child.name] = child
           return acc
         },

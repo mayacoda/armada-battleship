@@ -5,6 +5,41 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@chevrotain/cst-dts-gen@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@chevrotain/cst-dts-gen@npm:10.3.0"
+  dependencies:
+    "@chevrotain/gast": 10.3.0
+    "@chevrotain/types": 10.3.0
+    lodash: 4.17.21
+  checksum: f0ceb310da45406272e18577aac02cdc5ce542ec1c4257224e74b5ee63a270443f71ab1d4560aba371a48c9588e8c77af5f5e346616d419999504c0559c8fca5
+  languageName: node
+  linkType: hard
+
+"@chevrotain/gast@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@chevrotain/gast@npm:10.3.0"
+  dependencies:
+    "@chevrotain/types": 10.3.0
+    lodash: 4.17.21
+  checksum: 258f2cae843530587da40cafda9a02c89a468ea9e018baa9d2de78c88193883b3678c2c6292e3da0376b31b9ddcc321b4ffc20c94a342873bd587cbde19336b2
+  languageName: node
+  linkType: hard
+
+"@chevrotain/types@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@chevrotain/types@npm:10.3.0"
+  checksum: b85f334deb8de0ccd87b44e3b162457545680734178dc47967be25bff43fe161411849eae4eaf581c035725f7e0e789b37cad71fb280fffb00949201cc54ca5a
+  languageName: node
+  linkType: hard
+
+"@chevrotain/utils@npm:10.3.0":
+  version: 10.3.0
+  resolution: "@chevrotain/utils@npm:10.3.0"
+  checksum: e28190b143cbb68862781da4fa2900ac3a31d77e7529fdf62bd09fa6608cb5964d38f818431cb2054f190de113ad555906963978171860dc49f0424af26eb26e
+  languageName: node
+  linkType: hard
+
 "@cspotcode/source-map-support@npm:^0.8.0":
   version: 0.8.1
   resolution: "@cspotcode/source-map-support@npm:0.8.1"
@@ -122,6 +157,17 @@ __metadata:
     "@jridgewell/resolve-uri": ^3.0.3
     "@jridgewell/sourcemap-codec": ^1.4.10
   checksum: d89597752fd88d3f3480845691a05a44bd21faac18e2185b6f436c3b0fd0c5a859fbbd9aaa92050c4052caf325ad3e10e2e1d1b64327517471b7d51babc0ddef
+  languageName: node
+  linkType: hard
+
+"@netflix/nerror@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "@netflix/nerror@npm:1.1.3"
+  dependencies:
+    assert-plus: ^1.0.0
+    extsprintf: ^1.4.0
+    lodash: ^4.17.15
+  checksum: 5b11856cb66614744c91a3202f450c468d573aa036ca421e0aacf922cb15ac3c3e34062f3f2155e10a99942ac1ffa02e5df7fc88561855aeb3fc1d0abbaec46c
   languageName: node
   linkType: hard
 
@@ -425,6 +471,7 @@ __metadata:
   dependencies:
     concurrently: ^7.3.0
     cross-env: ^7.0.3
+    prettier-plugin-glsl: ^0.0.5
   languageName: unknown
   linkType: soft
 
@@ -432,6 +479,13 @@ __metadata:
   version: 1.1.1
   resolution: "array-flatten@npm:1.1.1"
   checksum: a9925bf3512d9dce202112965de90c222cd59a4fbfce68a0951d25d965cf44642931f40aac72309c41f12df19afa010ecadceb07cfff9ccc1621e99d89ab5f3b
+  languageName: node
+  linkType: hard
+
+"assert-plus@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "assert-plus@npm:1.0.0"
+  checksum: 19b4340cb8f0e6a981c07225eacac0e9d52c2644c080198765d63398f0075f83bbc0c8e95474d54224e297555ad0d631c1dcd058adb1ddc2437b41a6b424ac64
   languageName: node
   linkType: hard
 
@@ -582,6 +636,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"chevrotain@npm:^10.1.2":
+  version: 10.3.0
+  resolution: "chevrotain@npm:10.3.0"
+  dependencies:
+    "@chevrotain/cst-dts-gen": 10.3.0
+    "@chevrotain/gast": 10.3.0
+    "@chevrotain/types": 10.3.0
+    "@chevrotain/utils": 10.3.0
+    lodash: 4.17.21
+    regexp-to-ast: 0.5.0
+  checksum: ca02a2f713ddfe39877f89ae593e73e0399bbe8187ba47fa378ee9da5c4c821e2728799982a2f42683edbbcc7e97d2d2d019c9c409365b2ecef96320608e53d7
+  languageName: node
+  linkType: hard
+
 "chokidar@npm:>=3.0.0 <4.0.0, chokidar@npm:^3.5.2":
   version: 3.5.3
   resolution: "chokidar@npm:3.5.3"
@@ -702,6 +770,13 @@ __metadata:
   version: 2.0.19
   resolution: "colorette@npm:2.0.19"
   checksum: 888cf5493f781e5fcf54ce4d49e9d7d698f96ea2b2ef67906834bb319a392c667f9ec69f4a10e268d2946d13a9503d2d19b3abaaaf174e3451bfe91fb9d82427
+  languageName: node
+  linkType: hard
+
+"colors@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "colors@npm:1.4.0"
+  checksum: 98aa2c2418ad87dedf25d781be69dc5fc5908e279d9d30c34d8b702e586a0474605b3a189511482b9d5ed0d20c867515d22749537f7bc546256c6014f3ebdcec
   languageName: node
   linkType: hard
 
@@ -1509,6 +1584,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"extsprintf@npm:^1.4.0":
+  version: 1.4.1
+  resolution: "extsprintf@npm:1.4.1"
+  checksum: a2f29b241914a8d2bad64363de684821b6b1609d06ae68d5b539e4de6b28659715b5bea94a7265201603713b7027d35399d10b0548f09071c5513e65e8323d33
+  languageName: node
+  linkType: hard
+
 "fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -2113,7 +2195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.21":
+"lodash@npm:4.17.21, lodash@npm:^4.17.15, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -2685,6 +2767,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prettier-plugin-glsl@npm:^0.0.5":
+  version: 0.0.5
+  resolution: "prettier-plugin-glsl@npm:0.0.5"
+  dependencies:
+    "@netflix/nerror": ^1.1.3
+    chevrotain: ^10.1.2
+    colors: ^1.4.0
+    lodash: ^4.17.21
+  peerDependencies:
+    prettier: ^2.0.0
+  checksum: 5f2a3c9b9c4ceb34e91c97fe503478aaa5979b8962d748067c1faaba151cd5c4c6b775fd1b261a4e79abdf2d5489da70281c2966ddce1c70f12a123ce4ebf30b
+  languageName: node
+  linkType: hard
+
 "prettier@npm:2.7.1":
   version: 2.7.1
   resolution: "prettier@npm:2.7.1"
@@ -2810,6 +2906,13 @@ __metadata:
   version: 0.2.0
   resolution: "real-require@npm:0.2.0"
   checksum: fa060f19f2f447adf678d1376928c76379dce5f72bd334da301685ca6cdcb7b11356813332cc243c88470796bc2e2b1e2917fc10df9143dd93c2ea608694971d
+  languageName: node
+  linkType: hard
+
+"regexp-to-ast@npm:0.5.0":
+  version: 0.5.0
+  resolution: "regexp-to-ast@npm:0.5.0"
+  checksum: 72e32f2a1217bb22398ac30867ddd43e16943b6b569dd4eb472de47494c7a39e34f47ee3e92ad4cbf92308f98997da366fe094a0e58eb6b93eab0ee956fff86d
   languageName: node
   linkType: hard
 

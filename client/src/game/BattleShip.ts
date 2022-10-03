@@ -12,6 +12,7 @@ import { PlayerBoat } from './PlayerBoat'
 import { Water } from './Water'
 import { GameBoard } from './GameBoard'
 import { Resource } from '../engine/Resources'
+import { WaterMaterial } from './WaterMaterial'
 
 export class BattleShip implements Experience {
   resources: Resource[] = [Boat.resource, GameBoard.resource]
@@ -25,6 +26,7 @@ export class BattleShip implements Experience {
   water!: Water
 
   gameBoard!: GameBoard
+  waterMaterial!: WaterMaterial
 
   ready: boolean = false
 
@@ -76,6 +78,9 @@ export class BattleShip implements Experience {
       Object.values(this.otherPlayers).forEach((boat) => boat.update(delta))
       this.currentPlayer.update(delta)
     }
+
+    this.waterMaterial.update(delta)
+    this.gameBoard.update(delta)
   }
 
   resize() {}
@@ -99,15 +104,17 @@ export class BattleShip implements Experience {
     )
     this.water = new Water()
 
+    let waterMaterial = new WaterMaterial(13)
     const background = new THREE.Mesh(
-      new THREE.PlaneGeometry(40, 40),
-      new THREE.MeshStandardMaterial({
-        color: '#2f8c9b',
-      })
+      new THREE.PlaneGeometry(400, 400),
+      waterMaterial
     )
+    this.waterMaterial = waterMaterial
     background.rotation.x = -Math.PI / 2
     background.position.y = -0.01
     background.name = 'background'
+    background.receiveShadow = true
+
     this.engine.scene.add(background)
 
     this.gameBoard = new GameBoard(this.engine)

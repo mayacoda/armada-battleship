@@ -1,4 +1,13 @@
 {
   "semi": false,
-  "singleQuote": true
+  "singleQuote": true,
+  "plugins": ["prettier-plugin-glsl"],
+  "overrides": [
+    {
+      "files": "*.frag",
+      "options": {
+        "parser": "glsl-parser"
+      }
+    }
+  ]
 }
