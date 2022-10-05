@@ -60,11 +60,22 @@ export function createGameUI(
   const opponentNameElement = document.createElement('h2')
   opponentNameElement.style.marginTop = '0'
   opponentNameElement.innerText = `Playing against ${opponentName}`
-
   gameContainer.appendChild(opponentNameElement)
+
+  const timerElement = document.createElement('div')
+  timerElement.id = 'timer-element'
+  timerElement.style.marginBottom = '1rem'
+  timerElement.style.textAlign = 'center'
+  timerElement.style.display = 'none'
+  timerElement.innerHTML = `
+    Time left: <span id="time-left">10</span>
+  `
+
+  gameContainer.appendChild(timerElement)
 
   // show forfeit game button
   const forfeitButton = document.createElement('button')
+  forfeitButton.id = 'forfeit-button'
   forfeitButton.innerHTML = `<span class="emoji"><img src="${whiteFlag}"></span> Forfeit`
   forfeitButton.addEventListener('click', forfeitCallback)
 

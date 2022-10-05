@@ -76,6 +76,8 @@ export class Engine {
   resize() {
     this.camera.resize()
     this.renderEngine.resize()
-    this.experience.resize()
+    if (this.experience.resize) {
+      this.experience.resize()
+    }
   }
 }

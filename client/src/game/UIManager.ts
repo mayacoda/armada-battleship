@@ -85,7 +85,6 @@ export class UIManager {
         clearInterval(timer)
         removeChallengeElement()
       } else {
-        // floor time left to the nearest second
         acceptButton.innerText = `Accept (${timeLeft})`
       }
       timeLeft -= 1

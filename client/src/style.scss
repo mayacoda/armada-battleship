@@ -14,6 +14,7 @@ body,
 #canvas {
   --primary-color: #1ca1ce;
   --primary-color-dark: #0e5a6e;
+  --danger-color: #b91b00;
   --border-radius: 0.3em;
   --basic-color: #dadada;
   --box-shadow: 0 0 20px 2px rgb(0 0 0 / 20%);
@@ -57,6 +58,7 @@ h6 {
 
 .emoji {
   vertical-align: middle;
+
   img {
     width: 1.5em;
     height: 1.5em;
@@ -226,4 +228,17 @@ input {
     top: 1em;
     right: 1em;
   }
+}
+
+#timer-element {
+  background: var(--danger-color);
+  color: var(--light-color);
+  font-weight: 600;
+  padding: 0.25em 0.75em;
+  border-radius: var(--border-radius);
+}
+
+#game-container button#forfeit-button {
+  background: var(--dark-color);
+  color: var(--light-color);
 }
