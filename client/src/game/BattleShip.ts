@@ -110,6 +110,14 @@ export class BattleShip implements Experience {
       waterMaterial
     )
     this.waterMaterial = waterMaterial
+
+    this.engine.debug.gui.add(waterMaterial.uniforms.uAmount, 'value')
+    this.engine.debug.gui
+      .addColor(waterMaterial.uniforms.uColor, 'value')
+      .onChange((value: string) => {
+        waterMaterial.uniforms.uColor.value = new THREE.Color(value)
+      })
+
     background.rotation.x = -Math.PI / 2
     background.position.y = -0.01
     background.name = 'background'

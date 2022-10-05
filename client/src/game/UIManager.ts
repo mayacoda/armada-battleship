@@ -68,6 +68,7 @@ export class UIManager {
         const username = loginForm.querySelector(
           'input[name="username"]'
         ) as HTMLInputElement
+        if (!username.value) return
         resolve(username.value)
         loginModal.remove()
       })

@@ -20,6 +20,7 @@ export class Raycaster extends EventEmitter {
     })
 
     document.addEventListener('click', (event) => {
+      if (!(event.target instanceof HTMLCanvasElement)) return
       const point = this.mouseEventToVector2(event)
       this.setPointer(point.x, point.y)
       this.update()
