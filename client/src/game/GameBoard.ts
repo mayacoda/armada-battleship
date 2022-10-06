@@ -229,16 +229,24 @@ export class GameBoard extends Object3D implements GameEntity {
 
   private markResult(grid: GridHelper, x: number, y: number, hit: boolean) {
     if (hit) {
-      const geometry = new THREE.SphereGeometry(0.1)
-      const material = new THREE.MeshBasicMaterial({ color: '#b01717' })
+      const geometry = new THREE.SphereGeometry(0.2)
+      const material = new THREE.MeshStandardMaterial({
+        color: '#b01717',
+        metalness: 0.7,
+        roughness: 0.1,
+      })
       const sphere = new THREE.Mesh(geometry, material)
       sphere.position.copy(this.coordinateToPoint(x, y, grid))
       sphere.position.z = 0.3
       sphere.name = 'marker'
       this.add(sphere)
     } else {
-      const geometry = new THREE.SphereGeometry(0.1)
-      const material = new THREE.MeshBasicMaterial({ color: '#807d7d' })
+      const geometry = new THREE.SphereGeometry(0.2)
+      const material = new THREE.MeshStandardMaterial({
+        color: '#807d7d',
+        metalness: 0.7,
+        roughness: 0.1,
+      })
       const box = new THREE.Mesh(geometry, material)
       box.position.copy(this.coordinateToPoint(x, y, grid))
       box.name = 'marker'

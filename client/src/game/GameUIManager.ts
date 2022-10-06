@@ -43,7 +43,7 @@ export class GameUIManager {
 
     let timer: NodeJS.Timer
 
-    const MAX_TIME_PER_TURN = 8
+    const MAX_TIME_PER_TURN = 5
 
     this.socket.on('yourTurn', () => {
       let timerElement = document.querySelector('#timer-element')
