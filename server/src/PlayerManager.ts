@@ -16,13 +16,14 @@ export class PlayerManager {
     socket.on('disconnect', () => {
       this.removePlayer(socket.id)
     })
-    socket.on('login', (name) => {
+    socket.on('login', (name, linkToTwitter) => {
       let player: Player = {
         id: socket.id,
         name: name,
         isPlaying: false,
         position: randomVec3(),
         rotation: null,
+        linkToTwitter,
       }
       this.addPlayer(player)
 

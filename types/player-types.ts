@@ -4,6 +4,7 @@ export type Player = {
   isPlaying: boolean
   position: Vec3
   rotation: { x: number; y: number; z: number; w: number } | null
+  linkToTwitter: boolean
 }
 
 export type Vec3 = {

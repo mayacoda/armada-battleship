@@ -31,7 +31,7 @@ export type ServerToClientEvents = {
 }
 
 export type ClientToServerEvents = {
-  login: (name: string) => void
+  login: (name: string, linkToTwitter: boolean) => void
   challenge: (playerId: string) => void
   accept: (playerId: string) => void
   forfeit: () => void

@@ -179,7 +179,8 @@ input {
     }
   }
 
-  input {
+  input[type='text'],
+  input[type='submit'] {
     box-sizing: border-box;
     display: block;
     width: 100%;
@@ -187,6 +188,16 @@ input {
 
   input[type='text'] {
     margin-bottom: 1em;
+  }
+
+  input[type='checkbox'] {
+    accent-color: var(--primary-color);
+  }
+
+  label {
+    text-align: left;
+    margin-bottom: 1em;
+    display: block;
   }
 }
 

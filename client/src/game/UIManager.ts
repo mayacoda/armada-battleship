@@ -1,10 +1,11 @@
-import { EndState } from '../../../types/socket-types'
+import { EndState, GameOverReason } from '../../../types/socket-types'
 import { GameUIManager } from './GameUIManager'
 import { ClientGameState } from './ClientGameState'
 import { createGameOverOverlay } from './html/helpers'
 import { Engine } from '../engine/Engine'
 import boatImage from '../../assets/images/boat.svg'
 import bombImage from '../../assets/images/bomb.svg'
+import { Player } from '../../../types/player-types'
 
 export class UIManager {
   uiLayer: HTMLDivElement
@@ -16,7 +17,7 @@ export class UIManager {
   }
 
   async init() {
-    const userName = await this.showLogin()
+    const { name, linkToTwitter } = await this.showLogin()
 
     this.engine.socket.on('challenge', (attackerId: string) => {
       this.showChallenge(attackerId)
@@ -31,16 +32,25 @@ export class UIManager {
     })
 
     this.engine.socket.on('gameOver', (state: EndState) => {
-      const reason = state[this.gameState.id]
-      this.showGameOverModal(reason)
+      let reason: GameOverReason = 'lose'
+      let opponentId = ''
+      for (const [id, result] of Object.entries(state)) {
+        if (id === this.gameState.id) {
+          reason = result
+        } else {
+          opponentId = id
+        }
+      }
+      const opponent = this.gameState.players[opponentId]
+      this.showGameOverModal(reason, opponent)
     })
 
-    this.engine.socket.emit('login', userName)
+    this.engine.socket.emit('login', name, linkToTwitter)
     this.gameState.setScene('idle')
   }
 
   // Login
-  async showLogin(): Promise<string> {
+  async showLogin(): Promise<{ name: string; linkToTwitter: boolean }> {
     const loginModal = document.createElement('div')
     loginModal.classList.add('overlay', 'login-modal')
     loginModal.id = 'login'
@@ -53,7 +63,8 @@ export class UIManager {
     const loginForm = document.createElement('form')
     loginForm.id = 'login-form'
     loginForm.innerHTML = `
-      <input type="text" name="username" placeholder="Enter player name" autocomplete="off" />
+      <input type="text" name="username" placeholder="Name or Twitter" autocomplete="off" />
+      <label><input type="checkbox" name="isTwitter" id="twitter" />Add Twitter link</label>
       <input type="submit" class="primary" value="Play!" />
     `
     // add padding and style to log in form
@@ -68,8 +79,13 @@ export class UIManager {
         const username = loginForm.querySelector(
           'input[name="username"]'
         ) as HTMLInputElement
+
+        const twitter = loginForm.querySelector(
+          'input[name="isTwitter"]'
+        ) as HTMLInputElement
+
         if (!username.value) return
-        resolve(username.value)
+        resolve({ name: username.value, linkToTwitter: twitter.checked })
         loginModal.remove()
       })
     })
@@ -135,8 +151,18 @@ export class UIManager {
     })
   }
 
-  showGameOverModal(reason: 'win' | 'lose' | 'disconnect' | 'forfeit') {
+  showGameOverModal(
+    reason: 'win' | 'lose' | 'disconnect' | 'forfeit',
+    opponent: Player
+  ) {
     const overlay = createGameOverOverlay(reason, (e: Event) => {
+      if (
+        (reason === 'lose' || reason === 'forfeit') &&
+        opponent.linkToTwitter
+      ) {
+        const url = `https://twitter.com/${opponent.name}`
+        window.open(url, '_blank')
+      }
       e.stopPropagation()
       this.cleanUpGame()
     })
